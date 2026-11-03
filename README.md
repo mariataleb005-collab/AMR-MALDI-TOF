@@ -1,8 +1,15 @@
-# AMR prediction from MALDI-TOF spectra with PSO feature selection
+# AMR prediction from MALDI-TOF mass spectra
 
 Senior project, Biomedical Informatics, University of Sharjah.
 
-The project predicts antimicrobial resistance (resistant vs. susceptible) in *E. coli* from MALDI-TOF mass spectra (DRIAMS-A). It compares input representations and a particle swarm optimisation (PSO) feature selector with four enhancements.
+The project predicts antimicrobial resistance (resistant vs. susceptible) in *E. coli* from MALDI-TOF mass spectra (DRIAMS-A). It compares ways of representing and reducing the 6,000-bin spectra, combined with several classifiers, under one shared evaluation protocol. Methods tested so far:
+
+- **Input representations:** raw spectra, linear and RBF kernels, variance filtering (top 500/1000/2000 bins)
+- **Dimensionality reduction:** PCA, Kernel PCA, LASSO, grouped ANOVA
+- **Wrapper feature selection:** particle swarm optimisation (Original PSO, a Baseline PSO, four single enhancements, and the full model with all four)
+- **Classifiers:** logistic regression, SVM, XGBoost
+
+The final method has not been chosen yet. All methods use the same data, folds and metrics, so they can be compared directly.
 
 ## Repository layout
 
@@ -11,9 +18,9 @@ data/
   raw/                 original DRIAMS files (not committed)
   processed/           spectra_ecoli_A.npy, labels_ecoli_A.csv (not committed)
 data_preparation/      notebooks that build the shared data (labels + folds)
-experiments/
-  exp1_representations/  Exp. 1: raw, kernel (linear/RBF), variance top-k x LR/SVM/XGB
-  exp2_pso/              Exp. 2: Original PSO, Baseline, single enhancements, full PSO
+experiments/           one folder per experiment (code + notes)
+  exp1_representations/  raw, kernel (linear/RBF), variance top-k x LR/SVM/XGB
+  exp2_pso/              Original PSO, Baseline, single enhancements, full PSO
 results/
   exp1/                per-fold results of Exp. 1
   exp2_pso/            per-fold results of the PSO experiments
