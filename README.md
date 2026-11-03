@@ -69,7 +69,3 @@ python scripts/combine_cipro.py                    # Ciprofloxacin: Exp. 1 + all
 ```
 
 Close any open `.xlsx` output in Excel before running, or the script can't overwrite it.
-
-## Team
-
-- Maria Taleb Rooeintan
