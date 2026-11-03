@@ -6,6 +6,7 @@ data/processed/*
 shared_data/
 *.npy
 *.npz
+!results/**/*.npy
 *.xlsx
 !results/**/*.xlsx
 

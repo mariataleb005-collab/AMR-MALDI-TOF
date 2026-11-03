@@ -1,0 +1,61 @@
+antibiotic,rank,start_bin,end_bin,direction,strength,fold_overlap_top60
+Ampicillin-Amoxicillin,1,3257,3262,positive resistance-score coefficient,0.172,0.69
+Ampicillin-Amoxicillin,2,1295,1298,positive resistance-score coefficient,0.111,0.69
+Ampicillin-Amoxicillin,3,1632,1635,positive resistance-score coefficient,0.11,0.69
+Ampicillin-Amoxicillin,4,2148,2150,positive resistance-score coefficient,0.063,0.69
+Ampicillin-Amoxicillin,5,50,51,positive resistance-score coefficient,0.056,0.69
+Cotrimoxazole,1,3256,3262,positive resistance-score coefficient,0.15,0.51
+Cotrimoxazole,2,1295,1303,positive resistance-score coefficient,0.146,0.51
+Cotrimoxazole,3,466,468,negative resistance-score coefficient,0.045,0.51
+Cotrimoxazole,4,50,51,positive resistance-score coefficient,0.04,0.51
+Cotrimoxazole,5,304,305,positive resistance-score coefficient,0.037,0.51
+Ciprofloxacin,1,3257,3263,positive resistance-score coefficient,0.404,0.86
+Ciprofloxacin,2,1600,1605,negative resistance-score coefficient,0.312,0.86
+Ciprofloxacin,3,1295,1299,positive resistance-score coefficient,0.296,0.86
+Ciprofloxacin,4,467,471,negative resistance-score coefficient,0.226,0.86
+Ciprofloxacin,5,1633,1634,positive resistance-score coefficient,0.106,0.86
+Levofloxacin,1,3257,3263,positive resistance-score coefficient,0.406,0.85
+Levofloxacin,2,1600,1606,negative resistance-score coefficient,0.348,0.85
+Levofloxacin,3,1295,1300,positive resistance-score coefficient,0.338,0.85
+Levofloxacin,4,467,471,negative resistance-score coefficient,0.228,0.85
+Levofloxacin,5,1632,1634,positive resistance-score coefficient,0.152,0.85
+Amoxicillin-Clavulanic acid,1,2148,2150,positive resistance-score coefficient,0.058,0.48
+Amoxicillin-Clavulanic acid,2,1633,1635,positive resistance-score coefficient,0.056,0.48
+Amoxicillin-Clavulanic acid,3,1676,1678,positive resistance-score coefficient,0.054,0.48
+Amoxicillin-Clavulanic acid,4,1225,1227,positive resistance-score coefficient,0.052,0.48
+Amoxicillin-Clavulanic acid,5,454,455,negative resistance-score coefficient,0.036,0.48
+Ceftriaxone,1,3257,3262,positive resistance-score coefficient,0.296,0.77
+Ceftriaxone,2,1514,1519,negative resistance-score coefficient,0.215,0.77
+Ceftriaxone,3,1295,1298,positive resistance-score coefficient,0.204,0.77
+Ceftriaxone,4,2148,2150,positive resistance-score coefficient,0.163,0.77
+Ceftriaxone,5,2167,2169,negative resistance-score coefficient,0.141,0.77
+Cefpodoxime,1,491,495,positive resistance-score coefficient,0.24,0.57
+Cefpodoxime,2,454,456,positive resistance-score coefficient,0.132,0.57
+Cefpodoxime,3,567,569,positive resistance-score coefficient,0.129,0.57
+Cefpodoxime,4,50,51,positive resistance-score coefficient,0.104,0.57
+Cefpodoxime,5,109,110,positive resistance-score coefficient,0.091,0.57
+Tobramycin,1,3696,3702,negative resistance-score coefficient,0.198,0.51
+Tobramycin,2,1632,1635,positive resistance-score coefficient,0.129,0.51
+Tobramycin,3,2147,2150,positive resistance-score coefficient,0.116,0.51
+Tobramycin,4,2166,2169,negative resistance-score coefficient,0.109,0.51
+Tobramycin,5,1391,1392,negative resistance-score coefficient,0.052,0.51
+Ceftazidime,1,2027,2033,positive resistance-score coefficient,0.243,0.66
+Ceftazidime,2,3257,3261,positive resistance-score coefficient,0.216,0.66
+Ceftazidime,3,2148,2150,positive resistance-score coefficient,0.15,0.66
+Ceftazidime,4,1295,1297,positive resistance-score coefficient,0.127,0.66
+Ceftazidime,5,974,976,negative resistance-score coefficient,0.125,0.66
+Norfloxacin,1,3256,3262,positive resistance-score coefficient,0.424,0.52
+Norfloxacin,2,1600,1605,negative resistance-score coefficient,0.395,0.52
+Norfloxacin,3,467,470,negative resistance-score coefficient,0.241,0.52
+Norfloxacin,4,1296,1298,positive resistance-score coefficient,0.192,0.52
+Norfloxacin,5,2033,2035,positive resistance-score coefficient,0.17,0.52
+Cefepime,1,2147,2151,positive resistance-score coefficient,0.32,0.51
+Cefepime,2,2166,2170,negative resistance-score coefficient,0.306,0.51
+Cefepime,3,3256,3260,positive resistance-score coefficient,0.243,0.51
+Cefepime,4,2685,2688,negative resistance-score coefficient,0.192,0.51
+Cefepime,5,2836,2839,negative resistance-score coefficient,0.191,0.51
+Piperacillin-Tazobactam,1,1547,1550,negative resistance-score coefficient,0.121,0.24
+Piperacillin-Tazobactam,2,3028,3031,negative resistance-score coefficient,0.105,0.24
+Piperacillin-Tazobactam,3,1540,1543,negative resistance-score coefficient,0.104,0.24
+Piperacillin-Tazobactam,4,2960,2962,positive resistance-score coefficient,0.071,0.24
+Piperacillin-Tazobactam,5,1165,1166,negative resistance-score coefficient,0.053,0.24

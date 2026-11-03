@@ -1,0 +1,61 @@
+antibiotic,rank,start_Da,end_Da,direction,strength,n_bins,also_in_PCA_map
+Ampicillin-Amoxicillin,1,11771,11789,higher in R,0.0054349338856117,6,True
+Ampicillin-Amoxicillin,2,5888,5897,higher in R,0.0039002701692066,3,True
+Ampicillin-Amoxicillin,3,8444,8456,higher in R,0.0037898856614858,4,True
+Ampicillin-Amoxicillin,4,8501,8510,higher in S,0.0032810343643001,3,False
+Ampicillin-Amoxicillin,5,2150,2156,higher in R,0.0028456526143979,2,True
+Cotrimoxazole,1,9740,9770,higher in R,0.0099205448086013,9,False
+Cotrimoxazole,2,4850,4862,higher in S,0.0047560117687688,4,False
+Cotrimoxazole,3,11774,11786,higher in R,0.004509927924838,4,True
+Cotrimoxazole,4,5888,5897,higher in R,0.0039965073813115,3,True
+Cotrimoxazole,5,9707,9719,higher in S,0.0028541810308535,3,False
+Ciprofloxacin,1,11771,11795,higher in R,0.0376359405687802,8,True
+Ciprofloxacin,2,5885,5903,higher in R,0.0261615685930001,6,True
+Ciprofloxacin,3,6899,6908,higher in R,0.0090092591100981,3,True
+Ciprofloxacin,4,6863,6872,higher in S,0.0089241269345633,3,False
+Ciprofloxacin,5,6806,6815,higher in S,0.005801144580079199,3,True
+Levofloxacin,1,11771,11795,higher in R,0.0371526735126696,8,True
+Levofloxacin,2,5885,5903,higher in R,0.027501524013378,6,True
+Levofloxacin,3,6863,6872,higher in S,0.009434257821835601,3,False
+Levofloxacin,4,6899,6908,higher in R,0.0089932371711844,3,True
+Levofloxacin,5,8447,8453,higher in R,0.0042508906353074995,2,False
+Amoxicillin-Clavulanic acid,1,7022,7037,higher in R,0.0049265621983497,5,True
+Amoxicillin-Clavulanic acid,2,6899,6908,higher in R,0.0046559123145841,3,True
+Amoxicillin-Clavulanic acid,3,8444,8453,higher in R,0.0027950996707961,3,True
+Amoxicillin-Clavulanic acid,4,2150,2156,higher in R,0.002088256407505,2,False
+Amoxicillin-Clavulanic acid,5,5675,5684,higher in R,0.0017985968853188,3,True
+Ceftriaxone,1,2150,2156,higher in R,0.014173995421503601,2,False
+Ceftriaxone,2,11777,11789,higher in R,0.0113918658809243,4,True
+Ceftriaxone,3,5888,5897,higher in R,0.0104144128146308,3,True
+Ceftriaxone,4,2135,2141,higher in R,0.0070048542169583,2,False
+Ceftriaxone,5,2003,2009,higher in R,0.0059241791528465,2,False
+Cefpodoxime,1,8501,8510,higher in S,0.009288436064635,3,False
+Cefpodoxime,2,2813,2819,higher in S,0.009185017563979,2,False
+Cefpodoxime,3,2591,2600,higher in S,0.0091449327803614,3,False
+Cefpodoxime,4,2150,2156,higher in R,0.0086783086237416,2,True
+Cefpodoxime,5,5408,5417,higher in R,0.00595950379733,3,False
+Tobramycin,1,6896,6908,higher in R,0.0126924007598926,4,True
+Tobramycin,2,11774,11789,higher in R,0.0059115642691947,5,False
+Tobramycin,3,5888,5900,higher in R,0.0046992578926313994,4,False
+Tobramycin,4,6863,6872,higher in S,0.0046651036274088006,3,False
+Tobramycin,5,7028,7037,higher in R,0.0028870025146937,3,False
+Ceftazidime,1,11774,11789,higher in R,0.0091767960720019,5,True
+Ceftazidime,2,5888,5897,higher in R,0.0084171785027222,3,True
+Ceftazidime,3,2150,2156,higher in R,0.0078160717465525,2,False
+Ceftazidime,4,6899,6908,higher in R,0.0074254540803427,3,False
+Ceftazidime,5,2135,2141,higher in R,0.0045880691437885,2,False
+Norfloxacin,1,11768,11801,higher in R,0.0333115072233598,11,True
+Norfloxacin,2,5885,5906,higher in R,0.0205259981276942,7,True
+Norfloxacin,3,6863,6872,higher in S,0.006058259675131,3,False
+Norfloxacin,4,8504,8513,higher in S,0.0047239699963297,3,False
+Norfloxacin,5,6902,6908,higher in R,0.0030652746242303,2,False
+Cefepime,1,6896,6908,higher in R,0.010258145076002501,4,False
+Cefepime,2,5888,5897,higher in R,0.0064105267121066,3,False
+Cefepime,3,11774,11789,higher in R,0.0058914575965031,4,True
+Cefepime,4,2150,2156,higher in R,0.0055978881223006,2,False
+Cefepime,5,8444,8453,higher in R,0.0046239639446193,3,True
+Piperacillin-Tazobactam,1,10877,10889,higher in R,0.0054136807955534,4,True
+Piperacillin-Tazobactam,2,7421,7433,higher in R,0.0052419985102227,4,False
+Piperacillin-Tazobactam,3,4151,4154,higher in S,0.0014849004844726,1,False
+Piperacillin-Tazobactam,4,7727,7730,higher in R,0.0014583907864661,1,False
+Piperacillin-Tazobactam,5,2495,2498,higher in S,0.0013167985484757,1,False

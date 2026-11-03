@@ -1,0 +1,6 @@
+fold,n_regions,kept,run_jaccard,differs_from_start,antibiotic,search_minutes
+0,28,pso,0.26292171610893483,6,Ampicillin-Amoxicillin,33.77549606164296
+1,33,pso,0.24465426620086236,13,Ampicillin-Amoxicillin,38.91658908923467
+2,24,pso,0.2609689957516044,14,Ampicillin-Amoxicillin,35.86662307580312
+3,26,pso,0.372424718886983,8,Ampicillin-Amoxicillin,27.80345859924952
+4,28,pso,0.258096916633502,6,Ampicillin-Amoxicillin,39.42718446652095
