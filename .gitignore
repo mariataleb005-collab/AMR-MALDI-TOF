@@ -1,0 +1,28 @@
+# Data (not committed; see docs/DATA.md)
+data/raw/*
+data/processed/*
+!data/raw/README.md
+!data/processed/README.md
+shared_data/
+*.npy
+*.npz
+*.xlsx
+!results/**/*.xlsx
+
+# Python / Jupyter
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.venv/
+venv/
+.env
+
+# OS / editors
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# Office lock files
+~$*
