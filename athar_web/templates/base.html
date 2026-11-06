@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ATHAR{% endblock %} | AMR Prediction</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/style.css') }}">
+</head>
+<body>
+
+    <header class="site-header">
+        <nav class="navbar">
+            <a href="/" class="brand">
+                <img
+                    src="{{ url_for('static', path='/images/athar-logo.png') }}"
+                    alt="ATHAR logo"
+                    class="brand-logo"
+                >
+                <span class="brand-name">ATHAR <span class="arabic">أثر</span></span>
+            </a>
+
+            <div class="nav-links">
+                <a href="/" class="active">Predict</a>
+                <a href="/regions">Regions</a>
+                <a href="/history">History</a>
+                <a href="/about">About</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer">
+        <p>ATHAR | Antimicrobial Resistance Prediction Research</p>
+        <p>University of Sharjah · Senior Design Project · 2026</p>
+    </footer>
+
+    <script src="{{ url_for('static', path='/js/main.js') }}"></script>
+</body>
+</html>
