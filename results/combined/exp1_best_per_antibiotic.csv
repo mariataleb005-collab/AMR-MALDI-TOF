@@ -1,4 +1,0 @@
-antibiotic,representation,model,auroc_mean,auprc_mean,mcc_mean,bal_acc_mean
-Ampicillin-Amoxicillin,var2000,svm,0.7442,0.8176,0.333,0.6574
-Cefepime,var2000,svm,0.8937,0.6086,0.5591,0.7233
-Ciprofloxacin,var2000,svm,0.8468,0.7669,0.5761,0.7539

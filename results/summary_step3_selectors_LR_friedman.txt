@@ -1,0 +1,16 @@
+datasets=6 methods=11
+Friedman chi2=23.795 p=0.008164; Iman-Davenport F=3.286 p=0.002461; Nemenyi CD(0.05)=6.164
+
+               mean_rank
+selector                
+LightGBM-gain   3.666667
+ANOVA-bins      4.000000
+ANOVA-regions   4.416667
+L1-LR           4.500000
+RA-PSO          4.583333
+mRMR            5.000000
+All-bins        5.833333
+BPSO-bins       8.000000
+GWO-regions     8.000000
+BPSO-regions    8.666667
+GA-regions      9.333333

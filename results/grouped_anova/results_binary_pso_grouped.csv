@@ -1,5 +1,0 @@
-antibiotic,method,auc,auc_std,prauc,n_features
-Ciprofloxacin,binary_pso_grouped,0.770618989,0.014895354,0.593418887,1500
-Piperacillin-Tazobactam,binary_pso_grouped,0.68353721,0.021414374,0.160572937,1500
-Norfloxacin,binary_pso_grouped,0.765833122,0.027960889,0.571190327,1500
-Ceftazidime,binary_pso_grouped,0.775662193,0.014931615,0.377499254,1500

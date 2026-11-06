@@ -1,0 +1,85 @@
+region,n_antibiotics,antibiotics,mz_from,mz_to
+214,6,"Ampicillin-Amoxicillin, Cefepime, Ceftriaxone, Ciprofloxacin, Piperacillin-Tazobactam, Tobramycin",8420,8450
+325,6,"Ampicillin-Amoxicillin, Cefepime, Ceftriaxone, Ciprofloxacin, Piperacillin-Tazobactam, Tobramycin",11750,11780
+216,6,"Ampicillin-Amoxicillin, Cefepime, Ceftriaxone, Ciprofloxacin, Piperacillin-Tazobactam, Tobramycin",8480,8510
+163,5,"Ampicillin-Amoxicillin, Cefepime, Ceftriaxone, Ciprofloxacin, Tobramycin",6890,6920
+46,5,"Ampicillin-Amoxicillin, Cefepime, Ceftriaxone, Ciprofloxacin, Tobramycin",3380,3410
+129,5,"Ampicillin-Amoxicillin, Cefepime, Ceftriaxone, Ciprofloxacin, Tobramycin",5870,5900
+326,5,"Ampicillin-Amoxicillin, Cefepime, Ceftriaxone, Ciprofloxacin, Tobramycin",11780,11810
+160,5,"Ampicillin-Amoxicillin, Cefepime, Ceftriaxone, Ciprofloxacin, Tobramycin",6800,6830
+162,5,"Ampicillin-Amoxicillin, Cefepime, Ceftriaxone, Ciprofloxacin, Tobramycin",6860,6890
+215,5,"Ampicillin-Amoxicillin, Cefepime, Ceftriaxone, Ciprofloxacin, Tobramycin",8450,8480
+167,5,"Ampicillin-Amoxicillin, Cefepime, Ciprofloxacin, Piperacillin-Tazobactam, Tobramycin",7010,7040
+392,5,"Ampicillin-Amoxicillin, Cefepime, Ceftriaxone, Ciprofloxacin, Tobramycin",13760,13790
+5,5,"Ampicillin-Amoxicillin, Cefepime, Ceftriaxone, Ciprofloxacin, Tobramycin",2150,2180
+391,5,"Ampicillin-Amoxicillin, Cefepime, Ceftriaxone, Ciprofloxacin, Tobramycin",13730,13760
+1,4,"Ampicillin-Amoxicillin, Cefepime, Ceftriaxone, Ciprofloxacin",2030,2060
+4,4,"Ampicillin-Amoxicillin, Cefepime, Ceftriaxone, Ciprofloxacin",2120,2150
+7,4,"Ampicillin-Amoxicillin, Cefepime, Ceftriaxone, Piperacillin-Tazobactam",2210,2240
+30,4,"Ampicillin-Amoxicillin, Cefepime, Ceftriaxone, Tobramycin",2900,2930
+130,3,"Ampicillin-Amoxicillin, Ciprofloxacin, Tobramycin",5900,5930
+74,3,"Ampicillin-Amoxicillin, Ciprofloxacin, Piperacillin-Tazobactam",4220,4250
+27,3,"Cefepime, Ceftriaxone, Tobramycin",2810,2840
+205,2,"Ciprofloxacin, Tobramycin",8150,8180
+86,2,"Ceftriaxone, Tobramycin",4580,4610
+159,2,"Ampicillin-Amoxicillin, Ciprofloxacin",6770,6800
+256,2,"Ampicillin-Amoxicillin, Piperacillin-Tazobactam",9680,9710
+257,2,"Ampicillin-Amoxicillin, Piperacillin-Tazobactam",9710,9740
+259,2,"Ciprofloxacin, Piperacillin-Tazobactam",9770,9800
+282,2,"Ciprofloxacin, Tobramycin",10460,10490
+0,2,"Cefepime, Ceftriaxone",2000,2030
+324,2,"Ampicillin-Amoxicillin, Ciprofloxacin",11720,11750
+47,2,"Ciprofloxacin, Tobramycin",3410,3440
+14,2,"Cefepime, Ceftriaxone",2420,2450
+44,2,"Cefepime, Ceftriaxone",3320,3350
+34,2,"Cefepime, Ceftriaxone",3020,3050
+19,2,"Cefepime, Ceftriaxone",2570,2600
+33,2,"Cefepime, Ceftriaxone",2990,3020
+283,1,Ciprofloxacin,10490,10520
+227,1,Ampicillin-Amoxicillin,8810,8840
+481,1,Piperacillin-Tazobactam,16430,16460
+453,1,Piperacillin-Tazobactam,15590,15620
+221,1,Tobramycin,8630,8660
+390,1,Ciprofloxacin,13700,13730
+383,1,Piperacillin-Tazobactam,13490,13520
+346,1,Piperacillin-Tazobactam,12380,12410
+235,1,Piperacillin-Tazobactam,9050,9080
+234,1,Ampicillin-Amoxicillin,9020,9050
+296,1,Piperacillin-Tazobactam,10880,10910
+236,1,Piperacillin-Tazobactam,9080,9110
+254,1,Piperacillin-Tazobactam,9620,9650
+255,1,Piperacillin-Tazobactam,9650,9680
+323,1,Ciprofloxacin,11690,11720
+262,1,Piperacillin-Tazobactam,9860,9890
+280,1,Piperacillin-Tazobactam,10400,10430
+295,1,Piperacillin-Tazobactam,10850,10880
+146,1,Tobramycin,6380,6410
+192,1,Tobramycin,7760,7790
+76,1,Ceftriaxone,4280,4310
+9,1,Tobramycin,2270,2300
+10,1,Ceftriaxone,2300,2330
+11,1,Tobramycin,2330,2360
+13,1,Cefepime,2390,2420
+15,1,Ceftriaxone,2450,2480
+24,1,Tobramycin,2720,2750
+25,1,Ceftriaxone,2750,2780
+29,1,Cefepime,2870,2900
+43,1,Ceftriaxone,3290,3320
+49,1,Piperacillin-Tazobactam,3470,3500
+57,1,Tobramycin,3710,3740
+64,1,Ampicillin-Amoxicillin,3920,3950
+84,1,Piperacillin-Tazobactam,4520,4550
+185,1,Piperacillin-Tazobactam,7550,7580
+95,1,Piperacillin-Tazobactam,4850,4880
+106,1,Piperacillin-Tazobactam,5180,5210
+107,1,Ciprofloxacin,5210,5240
+108,1,Ciprofloxacin,5240,5270
+114,1,Piperacillin-Tazobactam,5420,5450
+122,1,Piperacillin-Tazobactam,5660,5690
+125,1,Cefepime,5750,5780
+128,1,Ciprofloxacin,5840,5870
+136,1,Piperacillin-Tazobactam,6080,6110
+137,1,Tobramycin,6110,6140
+151,1,Ampicillin-Amoxicillin,6530,6560
+153,1,Piperacillin-Tazobactam,6590,6620
+559,1,Ampicillin-Amoxicillin,18770,18800

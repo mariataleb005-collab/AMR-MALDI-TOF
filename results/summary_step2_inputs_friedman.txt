@@ -1,0 +1,12 @@
+datasets=36 methods=7
+Friedman chi2=128.060 p=3.292e-25; Iman-Davenport F=50.967 p=1.11e-16; Nemenyi CD(0.05)=1.502
+
+          mean_rank
+input              
+PCA-200    1.666667
+Var-2000   2.333333
+PCA-100    3.361111
+Var-1000   4.055556
+Raw-6000   4.833333
+Var-500    5.527778
+PCA-50     6.222222

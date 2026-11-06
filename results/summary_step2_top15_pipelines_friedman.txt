@@ -1,0 +1,19 @@
+datasets=6 methods=15
+Friedman chi2=51.950 p=2.867e-06; Iman-Davenport F=8.105 p=6.324e-10; Nemenyi CD(0.05)=8.756
+
+                     mean_rank
+SVM | PCA-200         1.000000
+SVM | Var-2000        3.000000
+SVM | PCA-100         3.333333
+SVM | Var-1000        4.833333
+LightGBM | PCA-200    6.833333
+XGBoost | PCA-200     7.333333
+MLP | PCA-200         7.833333
+SVM | Var-500         9.333333
+MLP | Var-2000       10.000000
+LightGBM | Var-2000  10.000000
+XGBoost | Var-2000   10.333333
+SVM | Raw-6000       11.333333
+LightGBM | PCA-100   11.500000
+XGBoost | PCA-100    11.500000
+RF | PCA-200         11.833333
