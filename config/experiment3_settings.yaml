@@ -16,7 +16,7 @@ antibiotics:                               # 13 antibiotics, split equally acros
 
 inputs:
   tune_on: Var-2000                        # the enhanced PSO is tuned here first, then run on the other two inputs
-  run_order: [Var-2000, Raw-6000, PCA-200]
+  run_order: [Var-2000, PCA-200, Raw-6000]
   Raw-6000:  {type: raw}
   Var-2000:  {type: top_variance, k: 2000}                      # variance ranking fitted on the training data only
   PCA-200:   {type: pca, n_components: 200, random_state: 0}    # fitted on the training data only
@@ -36,9 +36,8 @@ search:
   size_penalty_lambda: 0.2
 
 fitness:                                   # one fitness function for all five algorithms
-  wrapper_classifier: SVM
+  wrapper_classifier: KNN
   svm: {kernel: rbf, C: 10, gamma: scale, class_weight: balanced, standardise: true}
-  fallback_classifier: KNN                 # used only if the SVM proves too slow inside the search
   metric: AUPRC
   inner_folds: 3
   inner_seed: 0
