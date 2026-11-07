@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}History{% endblock %}
+{% block content %}
+<section class="history-page">
+  <div class="history-heading">
+    <div>
+      <div class="eyebrow">ANALYSIS RECORDS</div>
+      <h1>Prediction History</h1>
+      <p>Local records of ATHAR demonstration analyses. Results are simulated, not clinical predictions.</p>
+    </div>
+    <a class="history-export" href="/api/history/export">Export CSV</a>
+  </div>
+  <div class="history-alert"><strong>Demonstration mode.</strong> All results stored here are simulated. No patient or spectrum intensity data is stored in history.</div>
+  <div class="history-stats">
+    <article><span>Analyses</span><strong id="statAnalyses">—</strong></article>
+    <article><span>Simulated resistant calls</span><strong id="statResistant">—</strong></article>
+    <article><span>Simulated susceptible calls</span><strong id="statSusceptible">—</strong></article>
+    <article><span>Antibiotics per analysis</span><strong id="statAntibiotics">6</strong></article>
+  </div>
+  <div class="history-panel">
+    <div class="history-toolbar">
+      <div><h2>Saved Analyses</h2><p>One record per successfully analyzed spectrum.</p></div>
+      <div class="history-filters">
+        <label for="historySearch" class="sr-only">Search filenames</label>
+        <input id="historySearch" type="search" placeholder="Search filename or record ID">
+        <label for="historyMode" class="sr-only">Filter by mode</label>
+        <select id="historyMode"><option value="all">All modes</option><option value="simulation">Demo / Simulated</option></select>
+      </div>
+    </div>
+    <div class="history-table-wrap">
+      <table class="history-table"><thead><tr><th>Record</th><th>Date (UTC)</th><th>Filename</th><th>Mode</th><th>R / S</th><th>Details</th></tr></thead><tbody id="historyRows"></tbody></table>
+    </div>
+    <div id="historyEmpty" class="history-empty" hidden>No analyses found. Upload a valid spectrum on the Predict page to create your first demo record.</div>
+    <p id="historyStatus" role="status" class="history-status">Loading records…</p>
+  </div>
+  <section class="history-panel history-details" id="historyDetails" hidden>
+    <div class="history-detail-heading"><h2>Analysis details</h2><button type="button" id="historyClose">Close</button></div>
+    <p id="historyDetailMeta"></p>
+    <div id="historyDetailResults" class="history-result-grid"></div>
+  </section>
+</section>
+<script src="{{ url_for('static', path='/js/history.js') }}"></script>
+{% endblock %}

@@ -20,10 +20,27 @@
             </a>
 
             <div class="nav-links">
-                <a href="/" class="active">Predict</a>
-                <a href="/regions">Regions</a>
-                <a href="/history">History</a>
-                <a href="/about">About</a>
+                
+                <a href="/"
+                class="{% if page_title == 'Predict' %}active{% endif %}">
+                    Predict
+                </a>
+
+                <a href="/regions"
+                class="{% if page_title == 'Regions' %}active{% endif %}">
+                    Regions
+                </a>
+
+                <a href="/history"
+                class="{% if page_title == 'History' %}active{% endif %}">
+                    History
+                </a>
+
+                <a href="/about"
+                class="{% if page_title == 'About' %}active{% endif %}">
+                    About
+                </a>
+
             </div>
         </nav>
     </header>
