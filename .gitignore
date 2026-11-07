@@ -7,3 +7,5 @@ __pycache__/
 *.db
 *.sqlite3
 .env
+data/DRIAMS_*_SHORT_LIST.xlsx
+data/labels_ecoli_A.csv
