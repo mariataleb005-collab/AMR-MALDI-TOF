@@ -119,6 +119,7 @@ async def get_regions(antibiotic: str):
 
     return {
         "antibiotic": antibiotic,
+	"signature_cv_auprc": float(rows[0]["signature_cv_AUPRC"]) if rows and rows[0].get("signature_cv_AUPRC") else None,
         "regions": [
             {
                 "region": int(row["region"]),
