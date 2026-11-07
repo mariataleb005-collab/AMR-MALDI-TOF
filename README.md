@@ -21,7 +21,7 @@ and identifies the m/z regions that carry the resistance signal.
 | Experiment 3 | Five wrapper optimisers (enhanced PSO, binary PSO, GA, GWO, WOA) with the same fitness, budget and folds, on three inputs, 13 antibiotics | `experiment3_optimisers.py` |
 
 All Experiment 3 settings are in `config/experiment3_settings.yaml`, and every run reads that file.
-In Experiment 3 each optimiser searches for a set of regions; an SVM inside the search scores each candidate set on the
+In Experiment 3 each optimiser searches for a set of regions; an KNN inside the search scores each candidate set on the
 training years. The final set is then used to train the models of the input comparison on 2015-2017 and to score them once on 2018.
 
 ## Files
