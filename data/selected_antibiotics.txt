@@ -1,0 +1,13 @@
+Ceftriaxone
+Ciprofloxacin
+Cefepime
+Cotrimoxazole
+Tobramycin
+Ampicillin-Amoxicillin
+Amikacin
+Levofloxacin
+Amoxicillin-Clavulanic acid
+Ceftazidime
+Piperacillin-Tazobactam
+Cefpodoxime
+Norfloxacin

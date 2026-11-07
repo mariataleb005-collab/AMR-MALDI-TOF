@@ -1,0 +1,86 @@
+antibiotic,S,I,R,n_labelled,labels_present,positive_rate_%,train_pos,train_neg,test_pos,test_neg,decision
+Ceftriaxone,3875,1,1085,4961,3,21.9,830,2745,256,1130,keep
+Ciprofloxacin,3445,95,1371,4911,3,29.9,1084,2452,382,993,keep
+Cefepime,4051,504,335,4890,3,17.2,636,2888,203,1163,keep
+Cotrimoxazole,3293,0,1595,4888,2,32.6,1167,2342,428,951,keep
+Tobramycin,4240,32,604,4876,3,13.0,470,3035,166,1205,keep
+Ampicillin-Amoxicillin,1953,0,2913,4866,2,59.9,2102,1407,811,546,keep
+Amikacin,4527,296,35,4858,3,6.8,264,3234,67,1293,keep
+Levofloxacin,3415,97,1346,4858,3,29.7,1066,2431,377,984,keep
+Amoxicillin-Clavulanic acid,3649,0,1177,4826,2,24.4,795,2668,382,981,keep
+Ceftazidime,3951,365,506,4822,3,18.1,666,2816,205,1135,keep
+Piperacillin-Tazobactam,4449,44,306,4799,3,7.3,232,3229,118,1220,keep
+Cefpodoxime,1201,0,874,2075,2,42.1,582,815,292,386,keep
+Norfloxacin,1098,18,372,1488,3,26.2,295,748,95,350,keep
+Ertapenem,4948,5,30,4983,3,0.7,22,3569,13,1379,drop: minority class < 30
+Colistin,4912,0,18,4930,2,0.4,9,3547,9,1365,drop: minority class < 30
+Meropenem,4925,0,3,4928,2,0.1,3,3546,0,1379,drop: one class in train or test
+Imipenem,4918,0,5,4923,2,0.1,5,3540,0,1378,drop: one class in train or test
+Fosfomycin-Trometamol,1465,0,34,1499,2,2.3,25,1030,9,435,drop: minority class < 30
+Nitrofurantoin,1482,0,16,1498,2,1.1,13,1043,3,439,drop: minority class < 30
+Amoxicillin-Clavulanic acid_uncomplicated_HWI,46,0,1,47,2,2.1,1,33,0,13,drop: one class in train or test
+Chloramphenicol,14,0,0,14,1,0.0,0,8,0,6,drop: single label only
+Aztreonam,11,0,2,13,2,15.4,0,11,2,0,drop: one class in train or test
+Tigecycline,5,0,0,5,1,0.0,0,5,0,0,drop: single label only
+Moxifloxacin,5,0,0,5,1,0.0,0,4,0,1,drop: single label only
+Fosfomycin,4,0,0,4,1,0.0,0,1,0,3,drop: single label only
+Ceftazidime-Avibactam,3,0,0,3,1,0.0,0,1,0,2,drop: single label only
+Tetracycline,0,0,2,2,1,100.0,2,0,0,0,drop: single label only
+Cefuroxime,2,0,0,2,1,0.0,0,0,0,2,drop: single label only
+Doxycycline,1,0,1,2,2,50.0,1,0,0,1,drop: one class in train or test
+Clindamycin,0,0,1,1,1,100.0,1,0,0,0,drop: single label only
+Penicillin,0,0,1,1,1,100.0,1,0,0,0,drop: single label only
+Teicoplanin,0,0,1,1,1,100.0,0,0,1,0,drop: single label only
+Amoxicillin,0,0,0,0,0,,0,0,0,0,drop: not tested
+Vancomycin,0,0,0,0,0,,0,0,0,0,drop: not tested
+Metronidazole,0,0,0,0,0,,0,0,0,0,drop: not tested
+Erythromycin,0,0,0,0,0,,0,0,0,0,drop: not tested
+Fluconazole,0,0,0,0,0,,0,0,0,0,drop: not tested
+Amphotericin B,0,0,0,0,0,,0,0,0,0,drop: not tested
+Caspofungin,0,0,0,0,0,,0,0,0,0,drop: not tested
+Micafungin,0,0,0,0,0,,0,0,0,0,drop: not tested
+Anidulafungin,0,0,0,0,0,,0,0,0,0,drop: not tested
+Itraconazole,0,0,0,0,0,,0,0,0,0,drop: not tested
+5-Fluorocytosine,0,0,0,0,0,,0,0,0,0,drop: not tested
+Voriconazole,0,0,0,0,0,,0,0,0,0,drop: not tested
+Posaconazole,0,0,0,0,0,,0,0,0,0,drop: not tested
+Linezolid,0,0,0,0,0,,0,0,0,0,drop: not tested
+Daptomycin,0,0,0,0,0,,0,0,0,0,drop: not tested
+Gentamicin,0,0,0,0,0,,0,0,0,0,drop: not tested
+Gentamicin_high_level,0,0,0,0,0,,0,0,0,0,drop: not tested
+Minocycline,0,0,0,0,0,,0,0,0,0,drop: not tested
+Meropenem_without_meningitis,0,0,0,0,0,,0,0,0,0,drop: not tested
+Meropenem_with_meningitis,0,0,0,0,0,,0,0,0,0,drop: not tested
+Clarithromycin,0,0,0,0,0,,0,0,0,0,drop: not tested
+Oxacillin,0,0,0,0,0,,0,0,0,0,drop: not tested
+Cefazolin,0,0,0,0,0,,0,0,0,0,drop: not tested
+Rifampicin,0,0,0,0,0,,0,0,0,0,drop: not tested
+Fusidic acid,0,0,0,0,0,,0,0,0,0,drop: not tested
+Streptomycin,0,0,0,0,0,,0,0,0,0,drop: not tested
+Rifampicin_1mg-l,0,0,0,0,0,,0,0,0,0,drop: not tested
+Isoniazid_.1mg-l,0,0,0,0,0,,0,0,0,0,drop: not tested
+Pyrazinamide,0,0,0,0,0,,0,0,0,0,drop: not tested
+Ethambutol_5mg-l,0,0,0,0,0,,0,0,0,0,drop: not tested
+Azithromycin,0,0,0,0,0,,0,0,0,0,drop: not tested
+Cefixime,0,0,0,0,0,,0,0,0,0,drop: not tested
+Penicillin_with_other_infections,0,0,0,0,0,,0,0,0,0,drop: not tested
+Penicillin_with_meningitis,0,0,0,0,0,,0,0,0,0,drop: not tested
+Penicillin_with_pneumonia,0,0,0,0,0,,0,0,0,0,drop: not tested
+Mupirocin,0,0,0,0,0,,0,0,0,0,drop: not tested
+Meropenem_with_pneumonia,0,0,0,0,0,,0,0,0,0,drop: not tested
+Ticarcillin-Clavulan acid,0,0,0,0,0,,0,0,0,0,drop: not tested
+Penicillin_without_endokarditis,0,0,0,0,0,,0,0,0,0,drop: not tested
+Penicillin_with_endokarditis,0,0,0,0,0,,0,0,0,0,drop: not tested
+Cefoxitin_screen,0,0,0,0,0,,0,0,0,0,drop: not tested
+Isoniazid_.4mg-l,0,0,0,0,0,,0,0,0,0,drop: not tested
+Bacitracin,0,0,0,0,0,,0,0,0,0,drop: not tested
+Vancomycin_GRD,0,0,0,0,0,,0,0,0,0,drop: not tested
+Teicoplanin_GRD,0,0,0,0,0,,0,0,0,0,drop: not tested
+Ceftarolin,0,0,0,0,0,,0,0,0,0,drop: not tested
+Penicillin_without_meningitis,0,0,0,0,0,,0,0,0,0,drop: not tested
+Cefuroxime.1,0,0,0,0,0,,0,0,0,0,drop: not tested
+Ceftolozane-Tazobactam,0,0,0,0,0,,0,0,0,0,drop: not tested
+Ampicillin-Sulbactam,0,0,0,0,0,,0,0,0,0,drop: not tested
+Ceftobiprole,0,0,0,0,0,,0,0,0,0,drop: not tested
+Strepomycin_high_level,0,0,0,0,0,,0,0,0,0,drop: not tested
+Isavuconazole,0,0,0,0,0,,0,0,0,0,drop: not tested

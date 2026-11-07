@@ -2,3 +2,13 @@ data/*.npy
 *.log
 .DS_Store
 __pycache__/
+<<<<<<< HEAD
+=======
+.venv/
+*.py[cod]
+*.db
+*.sqlite3
+.env
+data/DRIAMS_*_SHORT_LIST.xlsx
+data/labels_ecoli_A.csv
+>>>>>>> 09f84e7 (Step 0: select antibiotics from the original DRIAMS-A shortlist)
