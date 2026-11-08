@@ -1,0 +1,16 @@
+commit: unknown
+settings_sha: 06e24a1e4a28
+date: 2026-11-08 14:37
+args: {'data_dir': 'data/', 'labels_csv': 'data/labels_ecoli_A_corrected.csv', 'out_dir': 'results/exp3/', 'runner': 'zainab', 'input': 'Var-2000', 'antibiotic': None, 'budget': None, 'seeds': None, 'algorithms': 'enhanced_pso,binary_pso,ga,gwo,woa', 'classifier': None, 'settings': 'C:\\Users\\Dell\\Downloads\\AMR-MALDI-TOF-main\\AMR-MALDI-TOF-main\\config\\experiment3_settings.yaml', 'n_jobs': None, 'skip_final': False, 'rescore': False}
+cfg: {'budget': 2000, 'pop': 20, 'init_density': (0.01, 0.5), 'lam': 0.2, 'subsample': 0.9, 'classifier': 'KNN', 'svm': {'kernel': 'rbf', 'C': 10, 'gamma': 'scale', 'class_weight': 'balanced', 'standardise': True}, 'inner_folds': 3, 'inner_seed': 0}
+enhanced_pso params: {'inertia': [0.4, 0.9], 'c1': 1.49445, 'c2': 1.49445, 'vmax': 4.0, 'seed_regions': 30, 'stall': 5, 'subruns': 3, 'restart_fraction': 0.5, 'restart_flip': 0.02, 'subrun_train_fraction': 0.8} (defaults, not tuned yet)
+python 3.12.7  numpy 1.26.4  pandas 2.3.3
+search minutes: 76.6   total minutes: 96.1
+              fitness  n_columns  fitness_calls  search_sec
+algorithm                                                  
+binary_pso      0.264    944.000         2000.0    3310.800
+enhanced_pso    0.231    791.000         1984.0    2105.767
+ga              0.357    519.333         1996.0    1778.500
+gwo             0.396    356.000         2000.0    1214.667
+woa             0.311    559.667         2000.0    1031.300
+all budgets respected: True   all beat random: True
