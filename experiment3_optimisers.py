@@ -56,7 +56,10 @@ ALGORITHMS = ['enhanced_pso', 'binary_pso', 'ga', 'gwo', 'woa']
 # Defaults of the enhanced PSO. Keys can be overridden in the settings file under
 # algorithms: enhanced_pso: params: {...}   (this is where the tuning result is stored).
 ENHANCED_DEFAULTS = dict(inertia=[0.4, 0.9], c1=1.49445, c2=1.49445, vmax=4.0, seed_regions=30,
-                         stall=5, subruns=3, restart_fraction=0.5, restart_flip=0.02, subrun_train_fraction=0.8)
+                         stall=5, subruns=3, restart_fraction=0.5, restart_flip=0.02, subrun_train_fraction=0.8,
+                         zero_velocity=False,   # True: velocities start at 0 and are reset to 0 after a restart
+                         anova_init=0.0,        # 0 = random start; up to 1 = start biased towards high-ANOVA units
+                         local_search=0.0)      # share of the budget kept for a final local search (0 = off)
 
 
 # ---------------------------------------------------------------- settings
@@ -169,20 +172,38 @@ def random_masks(rng, n, d, density):
     return m
 
 
+def anova_masks(rng, n, d, density, unit_rank, strength):
+    """Like random_masks, but the chance of switching a unit on follows its ANOVA rank.
+    weight = 1 + strength * (2 * score - 1), score = 1 for the best unit and 0 for the worst,
+    so the weights average 1 and the expected number of selected units is unchanged."""
+    dens = rng.uniform(*density, size=(n, 1))
+    pos = np.empty(d); pos[unit_rank] = np.arange(d)
+    score = 1 - pos / max(d - 1, 1)
+    w = 1 + strength * (2 * score - 1)
+    m = rng.random((n, d)) < np.clip(dens * w[None, :], 0, 1)
+    m[~m.any(1), unit_rank[0]] = True
+    return m
+
+
 def sigmoid(x):
     return 1 / (1 + np.exp(-np.clip(x, -50, 50)))
 
 
 # ---------------------------------------------------------------- the five optimisers
-def pso(fit, d, rng, budget, cfg, q, proposed, seed_mask=None):
+def pso(fit, d, rng, budget, cfg, q, proposed, seed_mask=None, unit_rank=None):
     """proposed=False: standard binary PSO (sigmoid transfer, fixed inertia).
        proposed=True : V-shaped transfer, diversity-adaptive inertia, restarts, seeded particle."""
     POP = cfg['pop']
     stop = fit.calls + budget
-    X = random_masks(rng, POP, d, cfg['init_density'])
+    strength = q.get('anova_init', 0.0) if proposed else 0.0
+    if strength > 0 and unit_rank is not None:
+        X = anova_masks(rng, POP, d, cfg['init_density'], unit_rank, strength)
+    else:
+        X = random_masks(rng, POP, d, cfg['init_density'])
     if seed_mask is not None:
         X[0] = seed_mask
-    V = rng.uniform(-1, 1, (POP, d))
+    zero_v = proposed and q.get('zero_velocity', False)
+    V = np.zeros((POP, d)) if zero_v else rng.uniform(-1, 1, (POP, d))
     f = np.array([fit(x) for x in X])
     P, pf = X.copy(), f.copy()
     g = int(np.argmax(pf)); G, gf = P[g].copy(), pf[g]
@@ -214,7 +235,7 @@ def pso(fit, d, rng, budget, cfg, q, proposed, seed_mask=None):
         if proposed and stall >= q['stall']:
             worst = np.argsort(pf)[:max(int(POP * q['restart_fraction']), 1)]
             X[worst] = np.where(rng.random((len(worst), d)) < q['restart_flip'], ~G, G)
-            V[worst] = rng.uniform(-1, 1, (len(worst), d))
+            V[worst] = 0.0 if zero_v else rng.uniform(-1, 1, (len(worst), d))
             stall = 0
     return G, gf
 
@@ -306,18 +327,57 @@ def enhanced_pso(Zs, ys, groups, rng, budget, cfg, q, n_pen, unit_rank):
     seed_k = max(1, round(q['seed_regions'] * d / C.N_REGIONS))
     seed = np.zeros(d, bool); seed[unit_rank[:seed_k]] = True
     sss = StratifiedShuffleSplit(k, train_size=q['subrun_train_fraction'], random_state=int(rng.integers(10**9)))
-    per_run = (budget - (k + 1)) // k                # keeps k + 1 calls for the safeguard comparison
+    ls_calls = int(round(q.get('local_search', 0.0) * budget))   # calls kept for the final local search
+    per_run = (budget - ls_calls - (k + 1)) // k     # keeps k + 1 calls for the safeguard comparison
     runs, hist = [], []
-    for sub, _ in sss.split(Zs, ys):
+    # one sub-run: there is no vote, so it searches on all the selection data instead of a resample
+    splits = [(np.arange(len(ys)), None)] if k == 1 else sss.split(Zs, ys)
+    for sub, _ in splits:
         fit = Fitness(Zs[sub], ys[sub], groups, per_run, cfg, n_pen)
-        G, _ = pso(fit, d, rng, per_run, cfg, q, proposed=True, seed_mask=seed)
+        G, _ = pso(fit, d, rng, per_run, cfg, q, proposed=True, seed_mask=seed, unit_rank=unit_rank)
         runs.append(G); full.calls += fit.calls; hist += fit.hist
     votes = np.sum(runs, 0)
     voted = votes >= (k // 2 + 1)
     cand = [voted] + runs if voted.any() else runs
     fs = [full(m) for m in cand]
     best = cand[int(np.argmax(fs))]
-    return best, max(fs), full.calls, votes, hist
+    bf = max(fs)
+    if ls_calls > 0:
+        best, bf = local_search(full, best, bf, unit_rank, ls_calls)
+        hist += full.hist
+    return best, bf, full.calls, votes, hist
+
+
+def local_search(fit, mask, f0, unit_rank, n_calls):
+    """Finishing step of the enhanced PSO, on the full selection data and inside the budget.
+    Each pass tries removing one selected unit (weakest ANOVA first; kept if the score does not drop)
+    and then adding one unselected unit (strongest ANOVA first; kept if the score rises).
+    Stops when the reserved calls are used or a whole pass changes nothing. Units without bins are skipped."""
+    stop = fit.calls + n_calls
+    mask = np.asarray(mask, bool).copy()
+    useful = np.array([len(g) > 0 for g in fit.groups])
+    changed = True
+    while changed and fit.calls < stop:
+        changed = False
+        for u in unit_rank[::-1]:                      # removals, weakest first
+            if fit.calls >= stop:
+                break
+            if not (mask[u] and useful[u]) or mask[useful].sum() <= 1:
+                continue
+            m = mask.copy(); m[u] = False
+            v = fit(m)
+            if v >= f0:
+                mask, f0, changed = m, v, True
+        for u in unit_rank:                            # additions, strongest first
+            if fit.calls >= stop:
+                break
+            if mask[u] or not useful[u]:
+                continue
+            m = mask.copy(); m[u] = True
+            v = fit(m)
+            if v > f0:
+                mask, f0, changed = m, v, True
+    return mask, f0
 
 
 # ---------------------------------------------------------------- one search run
