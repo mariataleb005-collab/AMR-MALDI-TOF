@@ -36,15 +36,57 @@ training years. The final set is then used to train the models of the input comp
 | `docs/` | Progress updates |
 
 The spectra file `data/spectra_ecoli_A.npy` is too large for GitHub and is not included.
+## Run Experiment 3
 
-## Run
+### Setup
 ```
 pip3 install -r requirements.txt
-python3 experiment3_optimisers.py data/ data/labels_ecoli_A_corrected.csv results/exp3/ --runner <name> --input Var-2000
 ```
-`--runner` takes `joud`, `maria` or `zainab` and runs the antibiotics listed for that name in the settings file.
-`--antibiotic <name>` runs a single antibiotic (used for a pilot run). Each log starts with the commit and the settings that were used.
-Check the first log line of an antibiotic against `data/label_counts.csv` (for example Ciprofloxacin: train 3536, 1084 non-susceptible; test 1375, 382).
+The spectra file `spectra_ecoli_A.npy` is not in the repository (too large). Each person keeps a copy on their own computer. The first argument of the command below is the **folder that contains it**. If the path has a space, put it in quotes.
+
+### Who runs which antibiotics
+`--runner` selects the antibiotics assigned to a person (set in `config/experiment3_settings.yaml`).
+
+| Runner | Antibiotics |
+|---|---|
+| `joud` | Ciprofloxacin, Cefepime, Cotrimoxazole, Levofloxacin, Ceftazidime |
+| `maria` | Ceftriaxone, Tobramycin, Amikacin, Amoxicillin-Clavulanic acid |
+| `zainab` | Piperacillin-Tazobactam, Ampicillin-Amoxicillin, Cefpodoxime, Norfloxacin |
+
+### Pilot (small test on one antibiotic, about 5 to 10 minutes)
+```
+python3 experiment3_optimisers.py "<spectra folder>" data/labels_ecoli_A_corrected.csv results/exp3_pilot/ --runner <name> --input Var-2000 --antibiotic <one of your antibiotics> --budget 200 --seeds 0
+```
+The pilot checks that the script works and how long a run takes. Do not commit pilot results.
+
+### Full run (one input at a time)
+```
+python3 experiment3_optimisers.py "<spectra folder>" data/labels_ecoli_A_corrected.csv results/exp3/ --runner <name> --input Var-2000 --algorithms binary_pso,ga,gwo,woa
+```
+- Inputs are run separately, in this order: `Var-2000`, then `PCA-200`, then `Raw-6000` (`--input`).
+- Budget (2,000 fitness calls), 3 seeds, folds and the KNN search classifier come from the settings file and are the same for everyone.
+- Run all of your antibiotics in one command, or add `--antibiotic <name>` for one.
+- Results are written to `results/exp3/<antibiotic>/`: `exp3_<input>_selections.csv`, `exp3_<input>_test.csv` and `exp3_<input>_log.txt`.
+
+### Enhanced PSO
+The four baselines are run first. The enhanced PSO is run afterwards with the tuned settings stored under `enhanced_pso: params` in the settings file. It runs into a **separate folder** so it does not overwrite the baselines:
+```
+python3 experiment3_optimisers.py "<spectra folder>" data/labels_ecoli_A_corrected.csv results/exp3_enhanced/ --runner <name> --input Var-2000 --algorithms enhanced_pso
+```
+
+### Re-scoring without searching again
+`--rescore` reads the regions saved in `exp3_<input>_selections.csv` and repeats only the six-model scoring. Use the same command and output folder as the run being re-scored, with `--rescore` added.
+
+### What to report
+One row per algorithm and antibiotic, averaged over the 3 seeds and the three tree models (XGBoost, LightGBM, Random Forest):
+
+| Antibiotic | Algorithm | Training AUROC | Training AUPRC | Test AUROC | Test AUPRC | Selected bins | Stability |
+|---|---|---|---|---|---|---|---|
+
+- Training = 5-fold cross-validation on 2015-2017. Test = 2018, used once.
+- Selected bins = number of m/z bins kept. Stability = Nogueira index over the 3 seeds.
+
+Each log starts with the commit and a fingerprint of the settings that were used. Check the first line of each antibiotic against `data/label_counts.csv` (for example Ciprofloxacin: train 3536, 1084 non-susceptible; test 1375, 382).
 
 ## Working together
 - `main` holds the shared code and settings and is changed only by merging.
