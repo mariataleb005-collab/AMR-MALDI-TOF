@@ -26,6 +26,8 @@ Outputs, in <out_dir>/<antibiotic>/ :
     exp3_<input>_selections.csv   one row per optimiser x seed (regions, fitness, calls, stability, checks)
     exp3_<input>_test.csv         one row per optimiser x seed x model (CV score, 2018 scores)
     exp3_<input>_log.txt          code version, settings fingerprint, timings
+
+Re-score only (no search), from the saved regions:  add --rescore to the same command.
 """
 import os
 for _v in ('OMP_NUM_THREADS', 'OPENBLAS_NUM_THREADS', 'MKL_NUM_THREADS'):
@@ -38,7 +40,7 @@ from sklearn.decomposition import PCA
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_selection import f_classif
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import average_precision_score
+from sklearn.metrics import average_precision_score, roc_auc_score
 from sklearn.model_selection import StratifiedKFold, StratifiedShuffleSplit
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.neural_network import MLPClassifier
@@ -380,16 +382,18 @@ def evaluate(run, inp, ytr, yte, folds, cfg_svm_c, model, which):
     cols = np.concatenate([inp.groups[i] for i in np.flatnonzero(run['mask'])])
     est0, scaled = final_models((ytr == 0).sum() / max((ytr == 1).sum(), 1), cfg_svm_c)[model]
     A, B = (inp.Z[:, cols], inp.Zte[:, cols]) if scaled else (inp.R[:, cols], inp.Rte[:, cols])
-    oof, aps = np.zeros(len(ytr)), []
+    oof, aps, aucs = np.zeros(len(ytr)), [], []
     for tr, va in folds:
         m = clone(est0).fit(A[tr], ytr[tr])
         oof[va] = score_vec(m, A[va])
         aps.append(average_precision_score(ytr[va], oof[va]))
+        aucs.append(roc_auc_score(ytr[va], oof[va]))
     m = clone(est0).fit(A, ytr)
     thr = C.youden_threshold(ytr, oof)
     sc = C.scores(yte, score_vec(m, B), thr)
     return dict(algorithm=run['algorithm'], seed=run['seed'], model=model, n_columns=len(cols),
-                cv_AUPRC=float(np.mean(aps)), **{f'test_{k}': v for k, v in sc.items()})
+                cv_AUROC=float(np.mean(aucs)), cv_AUPRC=float(np.mean(aps)),
+                **{f'test_{k}': v for k, v in sc.items()})
 
 
 # ---------------------------------------------------------------- helpers
@@ -408,6 +412,33 @@ def regions_of(run, inp):
     return np.flatnonzero(run['mask']).tolist()
 
 
+def rescore(args, abx, out, inp, ytr, yte, S, cfg, algos, n_jobs, t0):
+    """No search. Reads the regions saved by an earlier run and redoes only the six-model scoring."""
+    path = f'{out}/exp3_{args.input}_selections.csv'
+    if not os.path.exists(path):
+        print(f'[{abx}] no saved selections at {path}, skipped', flush=True)
+        return
+    old = pd.read_csv(path)
+    old = old[old.algorithm.isin(algos)]
+    runs = []
+    for _, r in old.iterrows():
+        mask = np.zeros(len(inp.groups), bool)
+        mask[json.loads(r['regions'])] = True
+        runs.append(dict(algorithm=r['algorithm'], seed=int(r['seed']), mask=mask))
+    folds = C.train_folds(ytr)
+    res = Parallel(n_jobs=n_jobs)(delayed(evaluate)(r, inp, ytr, yte, folds, cfg['svm']['C'], m, None)
+                                  for r in runs for m in S['final_evaluation']['models'])
+    T = pd.DataFrame(res)
+    T.insert(0, 'input', args.input); T.insert(0, 'antibiotic', abx)
+    T['best_by_cv'] = T.groupby(['algorithm', 'seed'])['cv_AUPRC'].transform('max') == T['cv_AUPRC']
+    T.to_csv(f'{out}/exp3_{args.input}_test.csv', index=False)
+    with open(f'{out}/exp3_{args.input}_log.txt', 'a') as fh:
+        fh.write(f'\nRESCORE {time.strftime("%Y-%m-%d %H:%M")}: six-model scoring redone from the saved regions '
+                 f'(commit {git_commit()}, settings_sha {S["_sha"]}); no search was repeated. '
+                 f'Adds cv_AUROC. Took {(time.time() - t0) / 60:.1f} min.\n')
+    print(f'[{abx}] rescored {len(runs)} saved selections in {(time.time() - t0) / 60:.1f} min', flush=True)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('data_dir'); ap.add_argument('labels_csv'); ap.add_argument('out_dir')
@@ -422,6 +453,9 @@ def main():
                                                        'config', 'experiment3_settings.yaml'))
     ap.add_argument('--n-jobs', type=int, default=None)
     ap.add_argument('--skip-final', action='store_true', help='search only, skip the six-model scoring')
+    ap.add_argument('--rescore', action='store_true',
+                    help='no search: read the saved regions from exp3_<input>_selections.csv in <out_dir> and '
+                         'redo only the six-model scoring (rewrites exp3_<input>_test.csv)')
     args = ap.parse_args()
 
     S = load_settings(args.settings)
@@ -442,6 +476,9 @@ def main():
         inp = build_input(args.input, S, Xtr, Xte)
         print(f'[{abx} | {args.input}] train {len(ytr)} ({ytr.sum()} non-S)  test {len(yte)} ({yte.sum()} non-S)  '
               f'units {len(inp.groups)}  budget {cfg["budget"]}  classifier {cfg["classifier"]}', flush=True)
+        if args.rescore:
+            rescore(args, abx, out, inp, ytr, yte, S, cfg, algos, n_jobs, t0)
+            continue
         runs = Parallel(n_jobs=n_jobs)(delayed(run_search)(a, s, inp, ytr, cfg, S, enh) for a in algos for s in seeds)
         t_search = time.time() - t0
         print(f'[{abx}] search done in {t_search / 60:.1f} min', flush=True)
