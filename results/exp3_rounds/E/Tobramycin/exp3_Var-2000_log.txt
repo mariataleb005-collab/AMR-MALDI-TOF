@@ -1,0 +1,12 @@
+commit: f44d96c (uncommitted changes)
+settings_sha: 1a1a98c46aeb
+date: 2026-11-08 18:57
+args: {'data_dir': 'C:\\Users\\maria\\OneDrive\\Desktop\\Senior_Project\\Extracted_Bacteria (Coli+Aureus)\\shared_data', 'labels_csv': 'data/labels_ecoli_A_corrected.csv', 'out_dir': 'results/exp3_rounds/E/', 'runner': 'maria', 'input': 'Var-2000', 'antibiotic': None, 'budget': None, 'seeds': None, 'algorithms': 'enhanced_pso', 'classifier': None, 'settings': 'config/rounds/round1_E.yaml', 'n_jobs': 3, 'skip_final': False, 'rescore': False}
+cfg: {'budget': 2000, 'pop': 20, 'init_density': (0.01, 0.5), 'lam': 0.2, 'subsample': 0.9, 'classifier': 'KNN', 'svm': {'kernel': 'rbf', 'C': 10, 'gamma': 'scale', 'class_weight': 'balanced', 'standardise': True}, 'inner_folds': 3, 'inner_seed': 0}
+enhanced_pso params: {'inertia': [0.4, 0.9], 'c1': 1.49445, 'c2': 1.49445, 'vmax': 4.0, 'seed_regions': 30, 'stall': 5, 'subruns': 1, 'restart_fraction': 0.5, 'restart_flip': 0.02, 'subrun_train_fraction': 0.8, 'zero_velocity': True, 'anova_init': 0.5, 'local_search': 0.1}
+python 3.12.10  numpy 1.26.4  pandas 2.3.3
+search minutes: 16.4   total minutes: 20.1
+              fitness  n_columns  fitness_calls  search_sec
+algorithm                                                  
+enhanced_pso    0.435      418.0         1982.0     689.867
+all budgets respected: True   all beat random: True

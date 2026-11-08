@@ -1,0 +1,12 @@
+commit: 8cd4510 (uncommitted changes)
+settings_sha: cc50d7e3c654
+date: 2026-11-08 15:16
+args: {'data_dir': 'C:\\Users\\maria\\OneDrive\\Desktop\\Senior_Project\\Extracted_Bacteria (Coli+Aureus)\\shared_data', 'labels_csv': 'data/labels_ecoli_A_corrected.csv', 'out_dir': 'results/exp3_rounds/A/', 'runner': 'maria', 'input': 'Var-2000', 'antibiotic': None, 'budget': None, 'seeds': None, 'algorithms': 'enhanced_pso', 'classifier': None, 'settings': 'C:\\Users\\maria\\OneDrive\\Desktop\\AMR-MALDI-TOF\\config\\experiment3_settings.yaml', 'n_jobs': None, 'skip_final': False, 'rescore': False}
+cfg: {'budget': 2000, 'pop': 20, 'init_density': (0.01, 0.5), 'lam': 0.2, 'subsample': 0.9, 'classifier': 'KNN', 'svm': {'kernel': 'rbf', 'C': 10, 'gamma': 'scale', 'class_weight': 'balanced', 'standardise': True}, 'inner_folds': 3, 'inner_seed': 0}
+enhanced_pso params: {'inertia': [0.4, 0.9], 'c1': 1.49445, 'c2': 1.49445, 'vmax': 4.0, 'seed_regions': 30, 'stall': 5, 'subruns': 3, 'restart_fraction': 0.5, 'restart_flip': 0.02, 'subrun_train_fraction': 0.8} (defaults, not tuned yet)
+python 3.12.10  numpy 1.26.4  pandas 2.3.3
+search minutes: 7.1   total minutes: 8.5
+              fitness  n_columns  fitness_calls  search_sec
+algorithm                                                  
+enhanced_pso    0.714    345.333         1984.0     419.967
+all budgets respected: True   all beat random: True
