@@ -1,0 +1,72 @@
+# Experiment 3: settings for the comparison of five wrapper optimisers for region selection.
+# All runs read this file, so every run uses identical settings.
+
+protocol:
+  labels_file: labels_ecoli_A_corrected.csv
+  label_rule: "S = 0, I or R = 1"
+  train_years: [2015, 2016, 2017]
+  test_year: 2018                          # used once, for the final score only
+  cv_folds: 5                              # stratified, inside the training years
+  cv_seed: 0
+
+antibiotics:                               # 13 antibiotics, split equally across the three runners
+  joud:   [Ciprofloxacin, Cefepime, Cotrimoxazole, Levofloxacin, Ceftazidime]
+  maria:  [Ceftriaxone, Tobramycin, Amikacin, Amoxicillin-Clavulanic acid]
+  zainab: [Piperacillin-Tazobactam, Ampicillin-Amoxicillin, Cefpodoxime, Norfloxacin]
+
+inputs:
+  tune_on: Var-2000                        # the enhanced PSO is tuned here first, then run on the other two inputs
+  run_order: [Var-2000, PCA-200, Raw-6000]
+  Raw-6000:  {type: raw}
+  Var-2000:  {type: top_variance, k: 2000}                      # variance ranking fitted on the training data only
+  PCA-200:   {type: pca, n_components: 200, random_state: 0}    # fitted on the training data only
+  # Regions: Raw-6000 uses 600 regions of 10 bins (30 Da each). Var-2000 uses the same 600 regions and keeps
+  # only the bins that passed the variance filter. PCA components have no m/z position, so PCA-200 is
+  # analysed for accuracy only.
+
+search:
+  unit: region
+  n_regions: 600
+  region_size_bins: 10
+  budget_fitness_calls: 2000               # identical for all five algorithms
+  population: 20
+  seeds: [0, 1, 2]                         # each seed uses a different 90 % subsample of the training years
+  subsample_fraction: 0.9
+  init_density: [0.01, 0.5]
+  size_penalty_lambda: 0.2
+
+fitness:                                   # one fitness function for all five algorithms
+  wrapper_classifier: KNN
+  svm: {kernel: rbf, C: 10, gamma: scale, class_weight: balanced, standardise: true}
+  metric: AUPRC
+  inner_folds: 3
+  inner_seed: 0
+  formula: "mean AUPRC over the inner folds - lambda * (selected bins) / 6000"
+
+algorithms:                                # population and budget are those of the search block, identical for all five
+  enhanced_pso:                            # proposed method
+    role: proposed
+    params: {zero_velocity: true, anova_init: 0.5, global_local: 0.6}   # round 2, version J1
+  binary_pso:
+    role: baseline
+    reference: "Kennedy and Eberhart (1997)"
+    params: {inertia: 0.729, c1: 1.49445, c2: 1.49445, vmax: 4.0, transfer: sigmoid}
+  ga:
+    role: baseline
+    reference: "Holland (1975); tournament selection, uniform crossover"
+    params: {selection: tournament3, crossover: uniform, crossover_prob: 0.9, mutation: "2/d", elitism: 1}
+  gwo:
+    role: baseline
+    reference: "Mirjalili et al. (2014); binary version of Emary et al. (2016), sigmoid transfer"
+    params: {transfer: sigmoid, slope: 10, threshold: 0.5, a: "linear 2 to 0"}
+  woa:
+    role: baseline
+    reference: "Mirjalili and Lewis (2016); binary version with sigmoid transfer"
+    params: {a: "linear 2 to 0", p_spiral: 0.5, b: 1, transfer: sigmoid}   # b is not given numerically in the original paper; 1 is the commonly used value
+
+final_evaluation:                          # models trained on the selected regions
+  models: [LR, SVM, RF, XGBoost, LightGBM, MLP]
+  selection_of_settings: "5-fold CV on the training years, mean AUPRC"
+  test: "train on 2015-2017, test once on 2018"
+  threshold: "Youden, from out-of-fold predictions"
+  metrics: [AUROC, AUPRC, F1, MCC, balanced_accuracy, VME, ME, n_selected_bins]

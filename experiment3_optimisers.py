@@ -59,7 +59,13 @@ ENHANCED_DEFAULTS = dict(inertia=[0.4, 0.9], c1=1.49445, c2=1.49445, vmax=4.0, s
                          stall=5, subruns=3, restart_fraction=0.5, restart_flip=0.02, subrun_train_fraction=0.8,
                          zero_velocity=False,   # True: velocities start at 0 and are reset to 0 after a restart
                          anova_init=0.0,        # 0 = random start; up to 1 = start biased towards high-ANOVA units
-                         local_search=0.0)      # share of the budget kept for a final local search (0 = off)
+                         local_search=0.0,      # share of the budget kept for a final local search (0 = off)
+                         local_search_mode='both',   # 'both' = remove and add units; 'remove' = only remove units
+                         vote_tolerance=None,   # None = keep the highest-scoring candidate; a number t = keep the
+                                                # voted set unless it scores more than t below the best sub-run
+                         global_local=0.0,      # 0 = off; g = share of the budget for the global phase, rest local
+                         promising_min=0.5,     # a unit joins the promising area if in >= this share of personal bests
+                         promising_min_size=10) # the promising area has at least this many units
 
 
 # ---------------------------------------------------------------- settings
@@ -190,7 +196,7 @@ def sigmoid(x):
 
 
 # ---------------------------------------------------------------- the five optimisers
-def pso(fit, d, rng, budget, cfg, q, proposed, seed_mask=None, unit_rank=None):
+def pso(fit, d, rng, budget, cfg, q, proposed, seed_mask=None, unit_rank=None, return_pbest=False):
     """proposed=False: standard binary PSO (sigmoid transfer, fixed inertia).
        proposed=True : V-shaped transfer, diversity-adaptive inertia, restarts, seeded particle."""
     POP = cfg['pop']
@@ -237,6 +243,8 @@ def pso(fit, d, rng, budget, cfg, q, proposed, seed_mask=None, unit_rank=None):
             X[worst] = np.where(rng.random((len(worst), d)) < q['restart_flip'], ~G, G)
             V[worst] = 0.0 if zero_v else rng.uniform(-1, 1, (len(worst), d))
             stall = 0
+    if return_pbest:
+        return G, gf, P
     return G, gf
 
 
@@ -328,6 +336,10 @@ def enhanced_pso(Zs, ys, groups, rng, budget, cfg, q, n_pen, unit_rank):
     seed = np.zeros(d, bool); seed[unit_rank[:seed_k]] = True
     sss = StratifiedShuffleSplit(k, train_size=q['subrun_train_fraction'], random_state=int(rng.integers(10**9)))
     ls_calls = int(round(q.get('local_search', 0.0) * budget))   # calls kept for the final local search
+    g_share = float(q.get('global_local', 0.0))
+    if g_share > 0:
+        return global_local_pso(Zs, ys, groups, rng, budget, cfg, q, n_pen, unit_rank,
+                                full, seed, sss, k, ls_calls, g_share)
     per_run = (budget - ls_calls - (k + 1)) // k     # keeps k + 1 calls for the safeguard comparison
     runs, hist = [], []
     # one sub-run: there is no vote, so it searches on all the selection data instead of a resample
@@ -342,13 +354,61 @@ def enhanced_pso(Zs, ys, groups, rng, budget, cfg, q, n_pen, unit_rank):
     fs = [full(m) for m in cand]
     best = cand[int(np.argmax(fs))]
     bf = max(fs)
+    tol = q.get('vote_tolerance')
+    if tol is not None and voted.any() and fs[0] >= bf - float(tol):   # cand[0] is the voted set
+        best, bf = voted, fs[0]
     if ls_calls > 0:
-        best, bf = local_search(full, best, bf, unit_rank, ls_calls)
+        best, bf = local_search(full, best, bf, unit_rank, ls_calls,
+                                add=q.get('local_search_mode', 'both') != 'remove')
         hist += full.hist
     return best, bf, full.calls, votes, hist
 
 
-def local_search(fit, mask, f0, unit_rank, n_calls):
+def global_local_pso(Zs, ys, groups, rng, budget, cfg, q, n_pen, unit_rank, full, seed, sss, k, ls_calls, g_share):
+    """Global then local search, inside the same budget.
+    Global phase (g_share of the budget): k PSO sub-runs over all units on resamples, as in the default.
+    Promising area: units present in at least `promising_min` of all personal bests of the global phase
+    (at least `promising_min_size` units, filled by frequency). Units without bins are never included.
+    Local phase (the rest): one PSO over the promising area only, on all the selection data, started from
+    the voted set of the global phase. Its best set is the answer (optionally polished by local_search)."""
+    d = len(groups)
+    per_run = int((budget - ls_calls) * g_share) // k
+    splits = [(np.arange(len(ys)), None)] if k == 1 else sss.split(Zs, ys)
+    runs, pbests, hist = [], [], []
+    for sub, _ in splits:
+        fit = Fitness(Zs[sub], ys[sub], groups, per_run, cfg, n_pen)
+        G, _, P = pso(fit, d, rng, per_run, cfg, q, proposed=True, seed_mask=seed, unit_rank=unit_rank,
+                      return_pbest=True)
+        runs.append(G); pbests.append(P); full.calls += fit.calls; hist += fit.hist
+    votes = np.sum(runs, 0)
+    voted = votes >= (k // 2 + 1)
+
+    freq = np.concatenate(pbests).mean(0)
+    useful = np.array([len(gr) > 0 for gr in groups])
+    area = np.flatnonzero((freq >= q.get('promising_min', 0.5)) & useful)
+    min_size = min(int(q.get('promising_min_size', 10)), int(useful.sum()))
+    if len(area) < min_size:                                   # too small: take the most frequent useful units
+        order = [u for u in np.argsort(-freq, kind='stable') if useful[u]]
+        area = np.sort(np.array(order[:min_size]))
+
+    start = voted if voted.any() else runs[0]
+    pos = np.empty(d); pos[unit_rank] = np.arange(d)
+    rank_area = np.argsort(pos[area], kind='stable')           # ANOVA order inside the area
+    local_budget = budget - ls_calls - full.calls
+    fit_a = Fitness(Zs, ys, [groups[u] for u in area], local_budget, cfg, n_pen)
+    seed_a = start[area] if start[area].any() else None
+    Ga, gfa = pso(fit_a, len(area), rng, local_budget, cfg, q, proposed=True, seed_mask=seed_a, unit_rank=rank_area)
+    full.calls += fit_a.calls; hist += fit_a.hist
+    best = np.zeros(d, bool); best[area[Ga]] = True
+    bf = gfa
+    if ls_calls > 0:
+        best, bf = local_search(full, best, bf, unit_rank, ls_calls,
+                                add=q.get('local_search_mode', 'both') != 'remove')
+        hist += full.hist
+    return best, bf, full.calls, votes, hist
+
+
+def local_search(fit, mask, f0, unit_rank, n_calls, add=True):
     """Finishing step of the enhanced PSO, on the full selection data and inside the budget.
     Each pass tries removing one selected unit (weakest ANOVA first; kept if the score does not drop)
     and then adding one unselected unit (strongest ANOVA first; kept if the score rises).
@@ -368,7 +428,7 @@ def local_search(fit, mask, f0, unit_rank, n_calls):
             v = fit(m)
             if v >= f0:
                 mask, f0, changed = m, v, True
-        for u in unit_rank:                            # additions, strongest first
+        for u in (unit_rank if add else []):           # additions, strongest first (skipped in 'remove' mode)
             if fit.calls >= stop:
                 break
             if mask[u] or not useful[u]:
