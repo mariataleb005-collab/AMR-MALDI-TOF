@@ -65,7 +65,11 @@ ENHANCED_DEFAULTS = dict(inertia=[0.4, 0.9], c1=1.49445, c2=1.49445, vmax=4.0, s
                                                 # voted set unless it scores more than t below the best sub-run
                          global_local=0.0,      # 0 = off; g = share of the budget for the global phase, rest local
                          promising_min=0.5,     # a unit joins the promising area if in >= this share of personal bests
-                         promising_min_size=10) # the promising area has at least this many units
+                         promising_min_size=10, # the promising area has at least this many units
+                         robust_select=0,       # 0 = off; N = re-check the N best distinct sets on fresh resamples
+                         robust_resamples=5,    # number of resamples used for the re-check
+                         robust_fraction=0.8,   # share of the selection data in each resample
+                         one_se_rule=True)      # True: smallest set within one standard error of the best mean
 
 
 # ---------------------------------------------------------------- settings
@@ -244,7 +248,7 @@ def pso(fit, d, rng, budget, cfg, q, proposed, seed_mask=None, unit_rank=None, r
             V[worst] = 0.0 if zero_v else rng.uniform(-1, 1, (len(worst), d))
             stall = 0
     if return_pbest:
-        return G, gf, P
+        return G, gf, P, pf
     return G, gf
 
 
@@ -340,14 +344,16 @@ def enhanced_pso(Zs, ys, groups, rng, budget, cfg, q, n_pen, unit_rank):
     if g_share > 0:
         return global_local_pso(Zs, ys, groups, rng, budget, cfg, q, n_pen, unit_rank,
                                 full, seed, sss, k, ls_calls, g_share)
-    per_run = (budget - ls_calls - (k + 1)) // k     # keeps k + 1 calls for the safeguard comparison
-    runs, hist = [], []
+    rb_calls = robust_calls(q)
+    per_run = (budget - ls_calls - rb_calls - (k + 1)) // k     # keeps k + 1 calls for the safeguard comparison
+    runs, hist, pool = [], [], []
     # one sub-run: there is no vote, so it searches on all the selection data instead of a resample
     splits = [(np.arange(len(ys)), None)] if k == 1 else sss.split(Zs, ys)
     for sub, _ in splits:
         fit = Fitness(Zs[sub], ys[sub], groups, per_run, cfg, n_pen)
-        G, _ = pso(fit, d, rng, per_run, cfg, q, proposed=True, seed_mask=seed, unit_rank=unit_rank)
-        runs.append(G); full.calls += fit.calls; hist += fit.hist
+        G, _, P, pf = pso(fit, d, rng, per_run, cfg, q, proposed=True, seed_mask=seed, unit_rank=unit_rank,
+                          return_pbest=True)
+        runs.append(G); pool += list(zip(P, pf)); full.calls += fit.calls; hist += fit.hist
     votes = np.sum(runs, 0)
     voted = votes >= (k // 2 + 1)
     cand = [voted] + runs if voted.any() else runs
@@ -357,6 +363,9 @@ def enhanced_pso(Zs, ys, groups, rng, budget, cfg, q, n_pen, unit_rank):
     tol = q.get('vote_tolerance')
     if tol is not None and voted.any() and fs[0] >= bf - float(tol):   # cand[0] is the voted set
         best, bf = voted, fs[0]
+    if rb_calls > 0:
+        pool = list(zip(cand, fs)) + pool                       # candidates scored on the full data come first
+        best, bf = robust_choice(Zs, ys, groups, rng, cfg, n_pen, q, pool, full)
     if ls_calls > 0:
         best, bf = local_search(full, best, bf, unit_rank, ls_calls,
                                 add=q.get('local_search_mode', 'both') != 'remove')
@@ -372,12 +381,13 @@ def global_local_pso(Zs, ys, groups, rng, budget, cfg, q, n_pen, unit_rank, full
     Local phase (the rest): one PSO over the promising area only, on all the selection data, started from
     the voted set of the global phase. Its best set is the answer (optionally polished by local_search)."""
     d = len(groups)
-    per_run = int((budget - ls_calls) * g_share) // k
+    rb_calls = robust_calls(q)
+    per_run = int((budget - ls_calls - rb_calls) * g_share) // k
     splits = [(np.arange(len(ys)), None)] if k == 1 else sss.split(Zs, ys)
     runs, pbests, hist = [], [], []
     for sub, _ in splits:
         fit = Fitness(Zs[sub], ys[sub], groups, per_run, cfg, n_pen)
-        G, _, P = pso(fit, d, rng, per_run, cfg, q, proposed=True, seed_mask=seed, unit_rank=unit_rank,
+        G, _, P, _ = pso(fit, d, rng, per_run, cfg, q, proposed=True, seed_mask=seed, unit_rank=unit_rank,
                       return_pbest=True)
         runs.append(G); pbests.append(P); full.calls += fit.calls; hist += fit.hist
     votes = np.sum(runs, 0)
@@ -394,18 +404,63 @@ def global_local_pso(Zs, ys, groups, rng, budget, cfg, q, n_pen, unit_rank, full
     start = voted if voted.any() else runs[0]
     pos = np.empty(d); pos[unit_rank] = np.arange(d)
     rank_area = np.argsort(pos[area], kind='stable')           # ANOVA order inside the area
-    local_budget = budget - ls_calls - full.calls
+    local_budget = budget - ls_calls - rb_calls - full.calls
     fit_a = Fitness(Zs, ys, [groups[u] for u in area], local_budget, cfg, n_pen)
     seed_a = start[area] if start[area].any() else None
-    Ga, gfa = pso(fit_a, len(area), rng, local_budget, cfg, q, proposed=True, seed_mask=seed_a, unit_rank=rank_area)
+    Ga, gfa, Pa, pfa = pso(fit_a, len(area), rng, local_budget, cfg, q, proposed=True, seed_mask=seed_a,
+                           unit_rank=rank_area, return_pbest=True)
     full.calls += fit_a.calls; hist += fit_a.hist
     best = np.zeros(d, bool); best[area[Ga]] = True
     bf = gfa
+    if rb_calls > 0:
+        def to_full(ma):
+            m = np.zeros(d, bool); m[area[np.asarray(ma, bool)]] = True; return m
+        pool = [(best, gfa)] + [(to_full(m), f) for m, f in zip(Pa, pfa)]
+        best, bf = robust_choice(Zs, ys, groups, rng, cfg, n_pen, q, pool, full)
     if ls_calls > 0:
         best, bf = local_search(full, best, bf, unit_rank, ls_calls,
                                 add=q.get('local_search_mode', 'both') != 'remove')
         hist += full.hist
     return best, bf, full.calls, votes, hist
+
+
+def robust_calls(q):
+    """Calls reserved for the robust final choice: N sets x r resamples + 1 final score."""
+    n = int(q.get('robust_select', 0))
+    return n * int(q.get('robust_resamples', 5)) + 1 if n > 0 else 0
+
+
+def robust_choice(Zs, ys, groups, rng, cfg, n_pen, q, pool, full):
+    """Robust final choice of the enhanced PSO (inside the budget, training data only).
+    The N best distinct sets in `pool` (pairs of set, score) are re-scored with the same fitness on r fresh
+    stratified resamples of the selection data. With the one-standard-error rule, the smallest set whose mean is
+    within one standard error of the best mean is kept (ties: higher mean); otherwise the best mean is kept.
+    The chosen set is finally scored once on the full selection data, like the other algorithms' answers."""
+    n, r = int(q['robust_select']), int(q['robust_resamples'])
+    seen, cands = set(), []
+    for m, f in sorted(pool, key=lambda t: -t[1]):
+        m = np.asarray(m, bool)
+        key = np.flatnonzero(m).tobytes()
+        if m.any() and key not in seen:
+            seen.add(key); cands.append(m)
+        if len(cands) == n:
+            break
+    sss = StratifiedShuffleSplit(r, train_size=q['robust_fraction'], random_state=int(rng.integers(10**9)))
+    S = np.zeros((len(cands), r))
+    for j, (sub, _) in enumerate(sss.split(Zs, ys)):
+        fit = Fitness(Zs[sub], ys[sub], groups, len(cands), cfg, n_pen)
+        S[:, j] = [fit(m) for m in cands]
+        full.calls += fit.calls
+    mean = S.mean(1)
+    se = S.std(1, ddof=1) / np.sqrt(r) if r > 1 else np.zeros(len(cands))
+    b = int(np.argmax(mean))
+    if q.get('one_se_rule', True):
+        ok = np.flatnonzero(mean >= mean[b] - se[b])
+        size = np.array([len(full.cols(cands[i])) for i in ok])
+        i = int(ok[np.lexsort((-mean[ok], size))[0]])           # fewest columns, then highest mean
+    else:
+        i = b
+    return cands[i], full(cands[i])
 
 
 def local_search(fit, mask, f0, unit_rank, n_calls, add=True):
