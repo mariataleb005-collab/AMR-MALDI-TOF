@@ -10,10 +10,11 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import (roc_auc_score, average_precision_score, matthews_corrcoef,
-                             balanced_accuracy_score, roc_curve)
+                             balanced_accuracy_score, roc_curve, f1_score)
 
-ANTIBIOTICS = ['Ciprofloxacin', 'Ceftriaxone', 'Cefepime', 'Piperacillin-Tazobactam',
-               'Tobramycin', 'Ampicillin-Amoxicillin']
+ANTIBIOTICS = ['Ciprofloxacin', 'Cefepime', 'Cotrimoxazole', 'Levofloxacin', 'Ceftazidime',
+               'Ceftriaxone', 'Tobramycin', 'Amikacin', 'Amoxicillin-Clavulanic acid',
+               'Piperacillin-Tazobactam', 'Ampicillin-Amoxicillin', 'Cefpodoxime', 'Norfloxacin']
 N_BINS, REGION = 6000, 10
 N_REGIONS = N_BINS // REGION
 TEST_YEAR = 2018
@@ -64,7 +65,7 @@ def scores(y, p, thr=None):
         yh = (p >= thr).astype(int)
         tp = ((yh == 1) & (y == 1)).sum(); fn = ((yh == 0) & (y == 1)).sum()
         tn = ((yh == 0) & (y == 0)).sum(); fp = ((yh == 1) & (y == 0)).sum()
-        out.update({'MCC': matthews_corrcoef(y, yh), 'BalAcc': balanced_accuracy_score(y, yh),
+        out.update({'F1': f1_score(y, yh, zero_division=0), 'MCC': matthews_corrcoef(y, yh), 'BalAcc': balanced_accuracy_score(y, yh),
                     'Sens': tp / max(tp + fn, 1), 'Spec': tn / max(tn + fp, 1),
                     # very major error = resistant called susceptible; major = the reverse
                     'VME': fn / max(tp + fn, 1), 'ME': fp / max(tn + fp, 1)})

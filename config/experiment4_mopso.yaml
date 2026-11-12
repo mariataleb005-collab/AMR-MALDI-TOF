@@ -1,0 +1,78 @@
+# Experiment 4: multi-objective region selection (enhanced MOPSO against baselines).
+# Every run reads this file, so every run uses identical settings. Do NOT change it between runs.
+# Objectives (both minimised): f1 = 1 - inner-CV AUPRC of the wrapper, f2 = selected columns / all columns.
+
+protocol:
+  label_rule: "S = 0, I or R = 1"
+  train_years: [2015, 2016, 2017]
+  test_year: 2018                          # used once, for the final score only
+
+antibiotics:
+  # Development antibiotics: already used to design the PSO in Experiment 3. Report them separately.
+  development: [Ceftriaxone, Tobramycin, Amikacin, Amoxicillin-Clavulanic acid]
+  # Evaluation antibiotics: never used for design or tuning. The paper's main claims come from these.
+  joud:   [Ciprofloxacin, Cefepime, Cotrimoxazole, Levofloxacin, Ceftazidime]
+  maria:  [Ceftriaxone, Tobramycin, Amikacin, Amoxicillin-Clavulanic acid]
+  zainab: [Piperacillin-Tazobactam, Ampicillin-Amoxicillin, Cefpodoxime, Norfloxacin]
+
+inputs:                                    # same definitions as Experiment 3 (fitted on training years only)
+  Raw-6000:  {type: raw}
+  Var-2000:  {type: top_variance, k: 2000}
+  PCA-200:   {type: pca, n_components: 200, random_state: 0}
+  # Regions with no bin left after the variance filter are removed from the search space for ALL algorithms.
+
+search:
+  budget_fitness_calls: 2000               # identical for all algorithms
+  population: 20
+  archive_size: 30                         # maximum size of the returned Pareto front
+  seeds: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]    # 10 seeds; each uses a different 90 % subsample of the training years
+  subsample_fraction: 0.9
+  init_density: [0.01, 0.5]
+
+fitness:                                   # one fitness for all algorithms
+  wrapper_classifier: LR                   # LR (L2 logistic regression, C = 0.1), KNN or LightGBM
+  inner_folds: 3
+  inner_seed: 0
+
+final_choice:                              # applied identically to every algorithm's front, outside the budget
+  rescore_repeats: 3                       # front re-scored on 3 fresh repetitions of 3-fold CV
+  rule: one_se                             # smallest set within one standard error of the best mean AUPRC
+  also_score_knee: true                    # the knee point of the front is also scored with the six models
+
+algorithms:
+  default: [emopso, mopso, nsga2]
+  # '--algorithms ablation' runs these: the proposed method with one component removed at a time,
+  # plus the baseline MOPSO given the same ANOVA start (fairness control).
+  ablation: [emopso-init, emopso-leader, emopso-vshape, emopso-inertia, emopso-mutation, emopso-restart,
+             emopso-local, mopso+init]
+  params:
+    mopso:                                 # Coello Coello, Pulido and Lechuga (2004), binary version
+      inertia: 0.4
+      c1: 1.0
+      c2: 1.0
+      vmax: 4.0
+      grid_divisions: 30
+      mutation_rate: 0.5
+    nsga2:                                 # Deb et al. (2002), binary version
+      crossover_prob: 0.9
+      mutation_bits: 1.0                   # expected number of flipped bits per child (rate = 1 / d)
+    emopso:                                # proposed; values fixed BEFORE the evaluation antibiotics are run
+      w_max: 0.9
+      w_min: 0.4
+      c1: 1.49445
+      c2: 1.49445
+      vmax: 4.0
+      grid_divisions: 30                   # used only in the ablation without the crowding leader
+      anova_strength: 0.8                  # 0 = uniform start, 1 = strongest ANOVA bias
+      seed_units: 30                       # particle 0 = top 30 ANOVA units
+      mut_max: 0.3                         # region-mutation probability per particle, start of the run
+      mut_min: 0.05                        # ... end of the run
+      stall: 5                             # iterations without an archive change before a restart
+      restart_fraction: 0.5
+      restart_flip: 0.05
+      local_share: 0.1                     # share of the budget for the final archive local search
+
+final_evaluation:
+  models: [LR, SVM, RF, XGBoost, LightGBM, MLP]
+  svm_C: 10
+  threshold: "Youden, from out-of-fold predictions on the training years"
