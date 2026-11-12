@@ -18,11 +18,16 @@ def _intensity():
 
 @lru_cache(maxsize=None)
 def trace_path(width=1200, height=120, first_bin=0, last_bin=6000, columns=600, gamma=0.75):
+    """SVG path of the example spectrum (header mark and home page)."""
+    return path_from(tuple(_intensity()), width, height, first_bin, last_bin, columns, gamma)
+
+
+def path_from(intensity, width=1200, height=120, first_bin=0, last_bin=6000, columns=600, gamma=0.75):
     """Return an SVG path 'd' string: one point per column, using the maximum bin in each column.
 
     gamma < 1 lifts small peaks so the trace stays readable at small sizes.
     """
-    values = _intensity()[first_bin:last_bin]
+    values = intensity[first_bin:last_bin]
     per_column = max(1, len(values) // columns)
     peaks = [max(values[i:i + per_column]) for i in range(0, len(values), per_column)]
     top = max(peaks) or 1.0

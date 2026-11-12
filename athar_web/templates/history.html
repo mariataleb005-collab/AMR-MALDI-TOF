@@ -6,8 +6,8 @@
     <div>
         <h1>Analysis history</h1>
         <p class="lead">
-            Every analysis run on this installation, newest first. ATHAR keeps the file name and the
-            calls, never the spectrum itself or any patient data.
+            Every analysis run on this installation, newest first. ATHAR keeps the sample ID, file name,
+            spectrum and calls, but no patient data.
         </p>
     </div>
     <a class="button-secondary" href="/api/history/export" download>Download CSV</a>
@@ -48,21 +48,8 @@
     <p id="historyStatus" class="table-note" role="status">Loading analyses…</p>
 </section>
 
-<section class="block" id="historyDetails" aria-labelledby="detailHeading" hidden>
-    <div class="block-head">
-        <h2 id="detailHeading">Analysis details</h2>
-        <button type="button" id="historyClose" class="button-quiet">Close</button>
-    </div>
-    <p id="historyDetailMeta" class="meta"></p>
-    <table class="data-table results-table">
-        <thead><tr><th scope="col">Antibiotic</th><th scope="col">Call</th><th scope="col" class="num">Score</th><th scope="col" class="num">Threshold</th></tr></thead>
-        <tbody id="historyDetailResults"></tbody>
-    </table>
-</section>
-
 {% endblock %}
 
 {% block scripts %}
-<script src="{{ url_for('static', path='/js/common.js') }}"></script>
 <script src="{{ url_for('static', path='/js/history.js') }}"></script>
 {% endblock %}

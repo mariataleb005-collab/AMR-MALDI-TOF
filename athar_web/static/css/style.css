@@ -362,4 +362,69 @@ input:hover, select:hover { border-color: var(--ink-3); }
     .trace-ticks span:nth-child(even) { visibility: hidden; }
     .control select { min-width: 0; width: 100%; }
     .key-value tbody th { width: 120px; }
+    .entry-links { display: flex; flex-wrap: wrap; margin: 2px 0 0; white-space: normal; }
+    .region-table { min-width: 560px; }
+    .report { padding: 20px 16px; }
+    .report-head { flex-direction: column; }
+    .report-title { text-align: left; }
+}
+
+/* Results, antibiotic pages and region tables */
+
+.action-row { display: flex; gap: 12px; flex-wrap: wrap; }
+.block-first { margin-top: 32px; }
+.breadcrumb { font-size: 0.875rem; margin-bottom: 8px; }
+.subhead { margin: 28px 0 8px; }
+.region-panel { margin-top: 28px; }
+.region-panel h3 { margin-bottom: 8px; }
+.region-table td, .region-table th { vertical-align: top; }
+.protein-list { list-style: none; margin: 0; padding: 0; }
+.protein-list li { margin-bottom: 6px; line-height: 1.4; }
+.protein-name { margin-right: 4px; }
+.gene { margin-right: 6px; color: var(--ink-2); }
+.entry-links { display: inline-flex; gap: 10px; margin-left: 6px; font-size: 0.8125rem; white-space: nowrap; }
+.link-list { padding-left: 1.1rem; margin: 0; }
+.link-list li { margin-bottom: 6px; }
+.link-list .status-muted { margin-left: 6px; font-size: 0.875rem; }
+
+/* Printable report */
+
+.report-body { background: var(--wash); }
+.report-toolbar { display: flex; gap: 12px; justify-content: center; padding: 20px 16px 0; }
+.report {
+    background: var(--paper);
+    max-width: 210mm;
+    margin: 20px auto 40px;
+    padding: 18mm 16mm;
+    box-shadow: 0 0 0 1px var(--rule);
+    font-size: 14px;
+}
+.report h2 { font-size: 1rem; margin: 22px 0 8px; }
+.report-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 24px;
+               border-bottom: 2px solid var(--brand); padding-bottom: 12px; margin-bottom: 16px; }
+.report-wordmark { color: var(--brand); }
+.report-wordmark .wordmark-trace path { stroke: var(--accent); }
+.report-wordmark .wordmark-arabic { color: var(--ink-2); }
+.report-title { text-align: right; }
+.report-title h1 { font-size: 1.25rem; max-width: none; }
+.report-title p { margin: 4px 0 0; color: var(--ink-2); font-size: 0.8125rem; }
+.report-meta { max-width: none; }
+.report-meta th, .report-meta td { padding-top: 5px; padding-bottom: 5px; }
+.report .data-table { font-size: 0.875rem; }
+.report-trace { margin: 0; color: var(--ink); }
+.report-trace svg { width: 100%; height: 110px; display: block; }
+.report-notes { padding-left: 1.1rem; margin: 0; font-size: 0.8125rem; color: var(--ink-2); }
+.report-notes li { margin-bottom: 4px; }
+.signoff { width: 100%; border-collapse: collapse; font-size: 0.8125rem; }
+.signoff th { text-align: left; font-weight: 500; width: 150px; padding: 12px 8px 4px 0; color: var(--ink-2); }
+.signoff td { border-bottom: 1px solid var(--rule-strong); padding: 12px 0 4px; min-width: 120px; }
+.report-foot { margin-top: 24px; font-size: 0.75rem; color: var(--ink-3); }
+
+@media print {
+    @page { size: A4; margin: 14mm; }
+    .report-body { background: #fff; }
+    .report-toolbar { display: none; }
+    .report { box-shadow: none; margin: 0; padding: 0; max-width: none; }
+    .call { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .report-head { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }

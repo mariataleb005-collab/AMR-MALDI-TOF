@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ATHAR report {{ record.id }}{% if record.sample_id %} ({{ record.sample_id }}){% endif %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/style.css') }}">
+</head>
+<body class="report-body">
+
+<div class="report-toolbar">
+    <button type="button" class="button-primary" onclick="window.print()">Print or save as PDF</button>
+    <a class="button-secondary" href="/analysis/{{ record.id }}">Back to the results</a>
+</div>
+
+<article class="report">
+    <header class="report-head">
+        <div class="wordmark report-wordmark">
+            <svg class="wordmark-trace" viewBox="0 0 64 22" aria-hidden="true" focusable="false">
+                <path d="{{ trace_path(64, 22, 300, 2700, 64, 0.6) }}"/>
+            </svg>
+            <span class="wordmark-latin">ATHAR</span>
+            <span class="wordmark-arabic" lang="ar">أثر</span>
+        </div>
+        <div class="report-title">
+            <h1>Antibiotic resistance prediction</h1>
+            <p>From a MALDI-TOF mass spectrum. Research use only.</p>
+        </div>
+    </header>
+
+    <table class="data-table key-value report-meta">
+        <tbody>
+            <tr><th scope="row">Report number</th><td>{{ record.id }}</td></tr>
+            <tr><th scope="row">Sample ID</th><td>{{ record.sample_id or "Not given" }}</td></tr>
+            <tr><th scope="row">Species</th><td><i>{{ record.species }}</i></td></tr>
+            <tr><th scope="row">Spectrum file</th><td>{{ record.filename }}</td></tr>
+            <tr><th scope="row">Analysed</th><td>{{ record.created_at.replace("T", " ").replace("+00:00", "") }} UTC</td></tr>
+        </tbody>
+    </table>
+
+    <h2>Results</h2>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th scope="col">Antibiotic</th>
+                <th scope="col">Call</th>
+                <th scope="col" class="num">Score</th>
+                <th scope="col" class="num">Threshold</th>
+                <th scope="col">WHO AWaRe</th>
+                <th scope="col">Model</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for s in sections %}
+            {% set r = s.result %}
+            <tr>
+                <th scope="row">{{ r.antibiotic }}</th>
+                <td><span class="call call-{{ r.call|lower }}">{{ {"R": "Resistant", "S": "Susceptible", "I": "Indeterminate"}[r.call] }}</span></td>
+                {% if r.score_type == "probability" %}
+                <td class="num">{{ "%.1f"|format(r.score * 100) }}%</td>
+                <td class="num">{{ "%.1f"|format(r.threshold * 100) }}%</td>
+                {% else %}
+                <td class="num">{{ "%.3f"|format(r.score) }}</td>
+                <td class="num">{{ "%.3f"|format(r.threshold) }}</td>
+                {% endif %}
+                <td>{{ s.aware }}</td>
+                <td>{{ r.model_version }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {% if trace %}
+    <h2>Spectrum</h2>
+    <figure class="report-trace">
+        <svg viewBox="0 0 1000 120" preserveAspectRatio="none" role="img" aria-label="Uploaded spectrum, 2,000 to 20,000 daltons">
+            <path d="{{ trace }}" fill="none" stroke="currentColor" stroke-width="1" vector-effect="non-scaling-stroke"/>
+            <line x1="0" y1="111" x2="1000" y2="111" stroke="currentColor" stroke-opacity="0.35" vector-effect="non-scaling-stroke"/>
+        </svg>
+        <div class="trace-ticks" aria-hidden="true"><span>2,000</span><span>11,000</span><span>20,000 Da</span></div>
+    </figure>
+    {% endif %}
+
+    <h2>Interpretation</h2>
+    <ul class="report-notes">
+        <li>A score at or above the model's threshold is reported as resistant. Thresholds were set on
+            the DRIAMS-A training spectra (2015–2017). Intermediate results were counted as resistant.</li>
+        <li>Indeterminate means the score was too close to the threshold to call.</li>
+        <li>These results come from a research prototype. They must not guide treatment and must be
+            confirmed by phenotypic antimicrobial susceptibility testing.</li>
+    </ul>
+
+    <h2>Review</h2>
+    <table class="signoff">
+        <tbody>
+            <tr><th scope="row">Reviewed by</th><td></td><th scope="row">Date</th><td></td></tr>
+            <tr><th scope="row">Phenotypic AST result</th><td colspan="3"></td></tr>
+            <tr><th scope="row">Comment</th><td colspan="3"></td></tr>
+        </tbody>
+    </table>
+
+    <footer class="report-foot">
+        ATHAR, senior project in Biomedical Informatics, University of Sharjah. Report generated from analysis {{ record.id }}.
+    </footer>
+</article>
+
+</body>
+</html>

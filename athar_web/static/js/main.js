@@ -1,3 +1,4 @@
+// Analyze page: choose or drop a spectrum file, send it, then open the results page.
 const form = document.getElementById("analyzeForm");
 const fileInput = document.getElementById("spectrumFile");
 const analyzeBtn = document.getElementById("analyzeBtn");
@@ -5,16 +6,11 @@ const exampleBtn = document.getElementById("exampleBtn");
 const uploadZone = document.getElementById("uploadZone");
 const fileNameText = document.getElementById("selectedFileName");
 const uploadMessage = document.getElementById("uploadMessage");
-const resultsSection = document.getElementById("resultsSection");
-const resultsMeta = document.getElementById("resultsMeta");
-const predictionRows = document.getElementById("predictionRows");
 
 let selectedFile = null;
 
 function setFile(file) {
     selectedFile = file;
-    resultsSection.hidden = true;
-    predictionRows.replaceChildren();
     uploadMessage.textContent = "";
     uploadMessage.classList.remove("is-error");
     uploadZone.classList.toggle("has-file", Boolean(file));
@@ -52,8 +48,8 @@ exampleBtn.addEventListener("click", async () => {
         const response = await fetch("/static/data/representative_spectrum.json");
         if (!response.ok) throw new Error("The example spectrum is missing from static/data.");
         const data = await response.json();
-        const csv = data.intensity.join("\n");
-        const file = new File([csv], `DRIAMS-A_example_${data.spectrum_index}.csv`, {type: "text/csv"});
+        const file = new File([data.intensity.join("\n")], `DRIAMS-A_example_${data.spectrum_index}.csv`,
+                              {type: "text/csv"});
         fileInput.value = "";
         setFile(file);
         uploadMessage.textContent = "Example spectrum loaded. Select Analyze spectrum to run it.";
@@ -70,7 +66,6 @@ form.addEventListener("submit", async (event) => {
     analyzeBtn.textContent = "Analyzing…";
     uploadMessage.classList.remove("is-error");
     uploadMessage.textContent = "Checking the spectrum.";
-    resultsSection.hidden = true;
 
     const formData = new FormData();
     formData.append("file", selectedFile);
@@ -81,22 +76,10 @@ form.addEventListener("submit", async (event) => {
         const response = await fetch("/api/predict", {method: "POST", body: formData});
         const data = await response.json();
         if (!response.ok) throw new Error(data.detail || "The spectrum could not be analyzed.");
-
-        predictionRows.replaceChildren();
-        for (const result of data.results) predictionRows.appendChild(resultRow(result));
-
-        const sample = data.sample_id ? `Sample ${data.sample_id}, ` : "";
-        resultsMeta.textContent = `${sample}${data.filename}, analysis ${data.analysis_id}.`;
-        const missing = data.not_installed.map(a => a.antibiotic);
-        document.getElementById("resultsNote").textContent = missing.length
-            ? `No model is installed for ${missing.join(", ")}, so ${missing.length === 1 ? "it was" : "they were"} skipped.`
-            : "";
-        resultsSection.hidden = false;
-        uploadMessage.textContent = "Analysis complete.";
-        resultsSection.scrollIntoView({behavior: smoothScroll(), block: "start"});
+        uploadMessage.textContent = "Analysis complete. Opening the results.";
+        window.location.assign(data.url);
     } catch (error) {
         showError(error.message);
-    } finally {
         analyzeBtn.disabled = false;
         analyzeBtn.textContent = "Analyze spectrum";
     }

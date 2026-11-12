@@ -7,10 +7,11 @@ from fastapi.responses import HTMLResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
+from . import knowledge, proteins
 from .history_db import get_analyses, get_analysis, initialize, save_analysis
 from .predict import MAX_BYTES, parse_spectrum
-from .registry import Registry
-from .spectrum_trace import trace_path
+from .registry import ANTIBIOTICS, Registry
+from .spectrum_trace import path_from, trace_path
 
 BASE_DIR = Path(__file__).resolve().parent
 SPECIES = "Escherichia coli"
@@ -24,6 +25,7 @@ app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 
 templates = Jinja2Templates(directory=BASE_DIR / "templates")
 templates.env.globals["trace_path"] = trace_path
+templates.env.globals["slug"] = knowledge.slug
 
 registry = Registry()
 initialize()
@@ -33,12 +35,94 @@ def page(request, name, title, **context):
     return templates.TemplateResponse(request=request, name=name, context={"page_title": title, **context})
 
 
+def catalogue():
+    rows = registry.catalogue()
+    for row in rows:
+        row["aware"] = knowledge.INFO[row["antibiotic"]][0]
+    return rows
+
+
+def region_rows(model, spectrum=None):
+    """The model's m/z regions, with this spectrum's highest bin in each and candidate proteins."""
+    if model is None or not model.uses_mz_regions:
+        return []
+    rows = []
+    for region in sorted(int(r) for r in model.meta["regions"]):
+        mz_from, mz_to = proteins.region_mz(region)
+        row = {"region": region, "mz_from": mz_from, "mz_to": mz_to,
+               "candidates": proteins.candidates(region), "search_url": proteins.uniprot_search_url(region)}
+        if spectrum is not None:
+            bins = spectrum[10 * region:10 * region + 10]
+            top = max(range(10), key=bins.__getitem__)
+            row["peak_mz"] = 2000 + 3 * (10 * region + top) + 1.5
+            row["peak_intensity"] = bins[top]
+        rows.append(row)
+    return rows
+
+
+def load_analysis(analysis_id):
+    record = get_analysis(analysis_id, with_spectrum=True)
+    if record is None:
+        raise HTTPException(status_code=404, detail="No analysis with this number.")
+    return record
+
+
+def analysis_context(record):
+    spectrum = record["spectrum"]
+    sections = []
+    for result in record["results"]:
+        model = registry.models.get(result["antibiotic"])
+        same_model = model is not None and model.meta["model_version"] == result["model_version"]
+        sections.append({
+            "result": result,
+            "slug": knowledge.slug(result["antibiotic"]),
+            "aware": knowledge.INFO[result["antibiotic"]][0],
+            "model_input": model.meta["input"] if same_model else None,
+            "regions": region_rows(model, spectrum) if same_model else [],
+            "model_changed": not same_model,
+        })
+    return {"record": record, "sections": sections, "protein_table": proteins.table_available()}
+
+
 # ---------------------------------------------------------------- pages
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
     return page(request, "predict.html", "Analyze",
-                antibiotics=registry.catalogue(), installed_count=len(registry.installed))
+                antibiotics=catalogue(), installed_count=len(registry.installed))
+
+
+@app.get("/analysis/{analysis_id}", response_class=HTMLResponse)
+async def analysis_page(request: Request, analysis_id: int):
+    record = load_analysis(analysis_id)
+    shading = {sec["result"]["antibiotic"]: [[r["mz_from"], r["mz_to"]] for r in sec["regions"]]
+               for sec in analysis_context(record)["sections"]}
+    return page(request, "analysis.html", "History", shading=shading, **analysis_context(record))
+
+
+@app.get("/analysis/{analysis_id}/report", response_class=HTMLResponse)
+async def report_page(request: Request, analysis_id: int):
+    record = load_analysis(analysis_id)
+    trace = path_from(record["spectrum"], 1000, 110) if record["spectrum"] else None
+    return page(request, "report.html", "Report", trace=trace, **analysis_context(record))
+
+
+@app.get("/antibiotics", response_class=HTMLResponse)
+async def antibiotics_page(request: Request):
+    return page(request, "antibiotics.html", "Antibiotics", antibiotics=catalogue())
+
+
+@app.get("/antibiotic/{name}", response_class=HTMLResponse)
+async def antibiotic_page(request: Request, name: str):
+    antibiotic = knowledge.from_slug(name, ANTIBIOTICS)
+    if antibiotic is None:
+        raise HTTPException(status_code=404, detail="Unknown antibiotic.")
+    model = registry.models.get(antibiotic)
+    return page(request, "antibiotic.html", "Antibiotics", antibiotic=antibiotic,
+                drug_class=ANTIBIOTICS[antibiotic], info=knowledge.details(antibiotic),
+                model=model.summary() if model else None, model_error=registry.errors.get(antibiotic),
+                model_input=model.meta["input"] if model else None,
+                regions=region_rows(model), protein_table=proteins.table_available())
 
 
 @app.get("/history", response_class=HTMLResponse)
@@ -48,7 +132,7 @@ async def history_page(request: Request):
 
 @app.get("/about", response_class=HTMLResponse)
 async def about_page(request: Request):
-    return page(request, "about.html", "About", antibiotics=registry.catalogue())
+    return page(request, "about.html", "About", antibiotics=catalogue())
 
 
 # ---------------------------------------------------------------- API
@@ -90,16 +174,25 @@ async def predict(
     sample_id = sample_id.strip()[:40]
     safe_filename = file.filename.replace("\\", "/").split("/")[-1][:200]
     results = registry.predict(spectrum)
-    analysis_id = save_analysis(sample_id, species, safe_filename, len(spectrum), results)
+    analysis_id = save_analysis(sample_id, species, safe_filename, spectrum, results)
 
     return {
         "analysis_id": analysis_id,
+        "url": f"/analysis/{analysis_id}",
         "sample_id": sample_id,
         "species": species,
         "filename": safe_filename,
         "results": results,
         "not_installed": [a for a in registry.catalogue() if a["status"] != "installed"],
     }
+
+
+@app.get("/api/analysis/{analysis_id}/spectrum")
+async def analysis_spectrum(analysis_id: int):
+    record = load_analysis(analysis_id)
+    if not record["spectrum"]:
+        raise HTTPException(status_code=404, detail="This analysis has no stored spectrum.")
+    return {"mz": [2000 + 3 * b + 1.5 for b in range(len(record["spectrum"]))], "intensity": record["spectrum"]}
 
 
 @app.get("/api/history")

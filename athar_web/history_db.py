@@ -1,8 +1,11 @@
 """Analysis history (SQLite, Python standard library).
 
-Stores the sample ID, file name and the calls of each analysis. The spectrum itself is never stored.
+Stores the sample ID, file name, the spectrum (6,000 intensities, compressed) and the calls of each
+analysis. No patient data is stored.
 """
 import json
+import zlib
+from array import array
 import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
@@ -29,17 +32,31 @@ def initialize():
             species TEXT NOT NULL,
             filename TEXT NOT NULL,
             feature_count INTEGER NOT NULL,
-            results_json TEXT NOT NULL
+            results_json TEXT NOT NULL,
+            spectrum BLOB
         )""")
+        columns = {row["name"] for row in db.execute("PRAGMA table_info(analyses)")}
+        if "spectrum" not in columns:
+            db.execute("ALTER TABLE analyses ADD COLUMN spectrum BLOB")
 
 
-def save_analysis(sample_id, species, filename, feature_count, results):
+def pack(spectrum):
+    return zlib.compress(array("f", spectrum).tobytes())
+
+
+def unpack(blob):
+    values = array("f")
+    values.frombytes(zlib.decompress(blob))
+    return values.tolist()
+
+
+def save_analysis(sample_id, species, filename, spectrum, results):
     created_at = datetime.now(timezone.utc).isoformat(timespec="seconds")
     with connect() as db:
         cursor = db.execute(
-            "INSERT INTO analyses (created_at, sample_id, species, filename, feature_count, results_json) "
-            "VALUES (?, ?, ?, ?, ?, ?)",
-            (created_at, sample_id, species, filename, feature_count, json.dumps(results)),
+            "INSERT INTO analyses (created_at, sample_id, species, filename, feature_count, results_json, spectrum) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?)",
+            (created_at, sample_id, species, filename, len(spectrum), json.dumps(results), pack(spectrum)),
         )
         return cursor.lastrowid
 
@@ -56,7 +73,12 @@ def get_analyses():
     return [_record(row) for row in rows]
 
 
-def get_analysis(analysis_id):
+def get_analysis(analysis_id, with_spectrum=False):
     with connect() as db:
         row = db.execute("SELECT * FROM analyses WHERE id = ?", (analysis_id,)).fetchone()
-    return _record(row) if row else None
+    if row is None:
+        return None
+    record = _record(row)
+    if with_spectrum:
+        record["spectrum"] = unpack(row["spectrum"]) if row["spectrum"] else None
+    return record

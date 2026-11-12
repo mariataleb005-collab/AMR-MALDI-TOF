@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% from "_regions.html" import region_table %}
+
+{% block title %}{{ antibiotic }}{% endblock %}
+
+{% block content %}
+
+<p class="breadcrumb"><a href="/antibiotics">Antibiotics</a></p>
+
+<section class="intro">
+    <h1>{{ antibiotic }}</h1>
+    <p class="lead">{{ drug_class }}. WHO AWaRe group: {{ info.aware }}.</p>
+</section>
+
+<section class="block block-first" aria-labelledby="refHeading">
+    <h2 id="refHeading">Reference</h2>
+    <table class="data-table key-value">
+        <tbody>
+            <tr><th scope="row">Drug class</th><td>{{ drug_class }}</td></tr>
+            <tr><th scope="row">WHO AWaRe</th><td>{{ info.aware }}. {{ info.aware_meaning }}</td></tr>
+            <tr><th scope="row">CARD drug class</th><td>{{ info.card_class }}</td></tr>
+        </tbody>
+    </table>
+
+    <h3 class="subhead">Further information</h3>
+    <ul class="link-list">
+        {% for link in info.links %}
+        <li><a href="{{ link.url }}" target="_blank" rel="noopener">{{ link.label }}</a> <span class="status-muted">{{ link.note }}</span></li>
+        {% endfor %}
+    </ul>
+</section>
+
+<section class="block" aria-labelledby="modelHeading">
+    <h2 id="modelHeading">ATHAR model</h2>
+    {% if model %}
+    <table class="data-table key-value">
+        <tbody>
+            <tr><th scope="row">Version</th><td>{{ model.model_version }}</td></tr>
+            <tr><th scope="row">Classifier</th><td>{{ model.classifier }} on {{ model.input }}</td></tr>
+            <tr><th scope="row">{{ "Components" if model_input == "PCA-200" else "m/z regions" }}</th><td>{{ model.n_regions }}</td></tr>
+            {% if model.training.n_spectra is defined %}
+            <tr><th scope="row">Training spectra</th><td>{{ "{:,}".format(model.training.n_spectra) }}, of which {{ "{:,}".format(model.training.n_resistant) }} resistant ({{ model.training.years }})</td></tr>
+            {% endif %}
+            {% for key, value in model.metrics.items() if value is number %}
+            <tr><th scope="row">{{ key.replace("cv_", "CV ").replace("test_", "2018 test ").replace("_", " ") }}</th><td>{{ "%.3f"|format(value) }}</td></tr>
+            {% endfor %}
+            {% if model.metrics.evaluation is defined %}
+            <tr><th scope="row">Evaluated on</th><td>{{ model.metrics.evaluation }}</td></tr>
+            {% endif %}
+        </tbody>
+    </table>
+    {% elif model_error %}
+    <p class="status-error">The model file for this antibiotic could not be loaded: {{ model_error }}</p>
+    {% else %}
+    <p class="status-muted">No model is installed for {{ antibiotic }} yet.</p>
+    {% endif %}
+</section>
+
+{% if regions %}
+<section class="block" aria-labelledby="regionHeading">
+    <h2 id="regionHeading">Regions the model uses</h2>
+    {{ region_table(regions, show_peak=False, protein_table=protein_table) }}
+</section>
+{% endif %}
+
+{% endblock %}

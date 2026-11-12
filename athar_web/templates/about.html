@@ -39,8 +39,9 @@
             training-year statistics and reduced to the features that the model uses.</li>
         <li>The model returns a score, which is compared with the threshold set on the training years.
             A score at or above the threshold is reported as resistant.</li>
-        <li>The calls are saved in the history with the sample ID and file name. The spectrum itself
-            is not stored.</li>
+        <li>The analysis gets its own results page with the spectrum, the regions each model uses and
+            candidate proteins for those regions, and a printable report. The sample ID, file name,
+            spectrum and calls are kept in the history; no patient data is stored.</li>
     </ol>
 
     <h2>Models</h2>
@@ -56,7 +57,7 @@
         <tbody>
             {% for row in antibiotics %}
             <tr>
-                <th scope="row">{{ row.antibiotic }}</th>
+                <th scope="row"><a href="/antibiotic/{{ slug(row.antibiotic) }}">{{ row.antibiotic }}</a></th>
                 <td>{{ row.drug_class }}</td>
                 {% if row.model %}
                 <td>{{ row.model.classifier }} on {{ row.model.input }}, {{ row.model.model_version }}</td>

@@ -2,9 +2,6 @@ const historyRows = document.getElementById("historyRows");
 const historyStatus = document.getElementById("historyStatus");
 const historyEmpty = document.getElementById("historyEmpty");
 const historySearch = document.getElementById("historySearch");
-const historyDetails = document.getElementById("historyDetails");
-const historyDetailMeta = document.getElementById("historyDetailMeta");
-const historyDetailResults = document.getElementById("historyDetailResults");
 let allRecords = [];
 
 const countCalls = (results, call) => results.filter(r => r.call === call).length;
@@ -24,13 +21,8 @@ function cell(row, text) {
     return td;
 }
 
-function showDetails(record) {
-    historyDetails.hidden = false;
-    const sample = record.sample_id ? `Sample ${record.sample_id}, ` : "";
-    historyDetailMeta.textContent =
-        `Analysis ${record.id}. ${sample}${record.filename}, ${record.species}, ${utcText(record.created_at)} UTC.`;
-    historyDetailResults.replaceChildren(...record.results.map(resultRow));
-    historyDetails.scrollIntoView({behavior: smoothScroll(), block: "nearest"});
+function utcText(iso) {
+    return iso.replace("T", " ").replace("+00:00", "");
 }
 
 function renderHistory() {
@@ -48,13 +40,11 @@ function renderHistory() {
         const i = countCalls(r, "I");
         cell(tr, `${countCalls(r, "R")} R, ${countCalls(r, "S")} S${i ? `, ${i} I` : ""}`);
         const actionCell = document.createElement("td");
-        const button = document.createElement("button");
-        button.type = "button";
-        button.className = "button-link";
-        button.textContent = "View";
-        button.setAttribute("aria-label", `View analysis ${record.id}`);
-        button.addEventListener("click", () => showDetails(record));
-        actionCell.appendChild(button);
+        const link = document.createElement("a");
+        link.href = `/analysis/${record.id}`;
+        link.textContent = "Open";
+        link.setAttribute("aria-label", `Open analysis ${record.id}`);
+        actionCell.appendChild(link);
         tr.appendChild(actionCell);
         historyRows.appendChild(tr);
     }
@@ -78,5 +68,4 @@ async function loadHistory() {
 }
 
 historySearch.addEventListener("input", renderHistory);
-document.getElementById("historyClose").addEventListener("click", () => { historyDetails.hidden = true; });
 loadHistory();

@@ -75,64 +75,14 @@
     </form>
 </section>
 
-<section id="resultsSection" class="block results" aria-labelledby="resultsHeading" hidden>
-    <h2 id="resultsHeading">Results</h2>
-    <p id="resultsMeta" class="meta"></p>
-
-    <table class="data-table results-table">
-        <thead>
-            <tr>
-                <th scope="col">Antibiotic</th>
-                <th scope="col">Call</th>
-                <th scope="col" class="num">Score</th>
-                <th scope="col" class="num">Threshold</th>
-            </tr>
-        </thead>
-        <tbody id="predictionRows"></tbody>
-    </table>
-    <p id="resultsNote" class="table-note"></p>
-</section>
-
 <section class="block" aria-labelledby="coverageHeading">
     <h2 id="coverageHeading">Antibiotics</h2>
-    <p>
-        ATHAR has one model per antibiotic. An antibiotic without an installed model is skipped
-        during analysis.
-    </p>
-
-    <div class="table-scroll">
-    <table class="data-table">
-        <thead>
-            <tr>
-                <th scope="col">Antibiotic</th>
-                <th scope="col">Class</th>
-                <th scope="col">Model</th>
-                <th scope="col" class="num">CV AUPRC</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for row in antibiotics %}
-            <tr>
-                <th scope="row">{{ row.antibiotic }}</th>
-                <td>{{ row.drug_class }}</td>
-                <td>
-                    {% if row.status == "installed" %}{{ row.model.model_version }}
-                    {% elif row.status == "error" %}<span class="status-error">Could not be loaded</span>
-                    {% else %}<span class="status-muted">Not installed</span>{% endif %}
-                </td>
-                <td class="num">
-                    {% if row.model and row.model.metrics.cv_AUPRC is defined %}{{ "%.2f"|format(row.model.metrics.cv_AUPRC) }}{% else %}<span class="status-muted">–</span>{% endif %}
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    </div>
+    <p>One model per antibiotic. Antibiotics without an installed model are skipped during analysis.</p>
+    {% include "_antibiotic_table.html" %}
 </section>
 
 {% endblock %}
 
 {% block scripts %}
-<script src="{{ url_for('static', path='/js/common.js') }}"></script>
 <script src="{{ url_for('static', path='/js/main.js') }}"></script>
 {% endblock %}
