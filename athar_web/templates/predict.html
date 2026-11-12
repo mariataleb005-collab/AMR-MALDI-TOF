@@ -1,150 +1,138 @@
 {% extends "base.html" %}
 
-{% block title %}Predict{% endblock %}
+{% block title %}Analyze a spectrum{% endblock %}
 
-{% block content %}
-
-<!-- PAGE HEADER -->
-<section class="hero">
-    <div class="eyebrow">MALDI-TOF MASS SPECTROMETRY</div>
-
-    <h1>Antimicrobial Resistance Prediction</h1>
-
-    <p>
-        Explore antimicrobial resistance predictions from
-        MALDI-TOF mass spectra using machine learning.
+{% block hero %}
+<section class="intro">
+    <h1>Predict antibiotic resistance from an <i>E.&nbsp;coli</i> MALDI-TOF spectrum</h1>
+    <p class="lead">
+        Upload the spectrum that the MALDI-TOF instrument produced during species identification.
+        ATHAR returns a resistance call for each antibiotic, a day or two before phenotypic
+        susceptibility testing is complete.
     </p>
 </section>
 
+<figure class="trace-hero">
+    <svg viewBox="0 0 1200 150" preserveAspectRatio="none" role="img"
+         aria-label="Measured E. coli MALDI-TOF spectrum from 2,000 to 20,000 daltons">
+        <path class="trace-line" d="{{ trace_path(1200, 128, 0, 6000, 600, 0.75) }}" vector-effect="non-scaling-stroke"/>
+        <line class="trace-axis" x1="0" y1="129" x2="1200" y2="129" vector-effect="non-scaling-stroke"/>
+    </svg>
+    <div class="trace-ticks" aria-hidden="true">
+        <span>2,000</span><span>5,000</span><span>8,000</span><span>11,000</span><span>14,000</span><span>17,000</span><span>20,000 Da</span>
+    </div>
+    <figcaption>
+        A measured <i>E. coli</i> spectrum from DRIAMS-A. ATHAR, <span lang="ar">أثر</span>, is Arabic for trace.
+    </figcaption>
+</figure>
+{% endblock %}
 
-<!-- SPECTRUM UPLOAD SECTION -->
-<section class="upload-card">
+{% block content %}
 
-    <div class="section-heading">
-        <div>
-            <h2>Analyze a Spectrum</h2>
-            <p>
-                Upload a MALDI-TOF spectrum to begin analysis.
-            </p>
+
+
+<section class="block" aria-labelledby="analyzeHeading">
+    <h2 id="analyzeHeading">Analyze a spectrum</h2>
+
+    {% if installed_count == 0 %}
+    <p class="notice notice-warning">
+        No prediction model is installed yet. ATHAR can check a spectrum file, but it cannot
+        predict resistance until a model is added.
+    </p>
+    {% endif %}
+
+    <form id="analyzeForm" class="form-grid" novalidate>
+        <span class="form-label" id="fileLabel">Spectrum file</span>
+        <div class="field">
+            <div class="dropzone" id="uploadZone">
+                <input type="file" id="spectrumFile" accept=".csv,.txt" aria-describedby="fileHint">
+                <label for="spectrumFile" class="button-secondary">Choose file</label>
+                <span id="selectedFileName" class="dropzone-text">or drop it here</span>
+            </div>
+            <p class="hint" id="fileHint">CSV or TXT with 6,000 binned intensity values (3&nbsp;Da bins, 2,000 to 20,000&nbsp;Da). Up to 2&nbsp;MB.</p>
         </div>
 
-        <span class="status-label">Demo Mode</span>
-    </div>
+        <label for="sampleId">Sample ID</label>
+        <div class="field">
+            <input type="text" id="sampleId" name="sample_id" maxlength="40" autocomplete="off" placeholder="Optional">
+            <p class="hint">Use a laboratory code, never a patient name or record number.</p>
+        </div>
 
+        <label for="species">Species</label>
+        <div class="field">
+            <select id="species" name="species">
+                <option value="Escherichia coli" selected>Escherichia coli</option>
+                <option value="Other">Another species</option>
+            </select>
+            <p class="hint">The models were trained on <i>E. coli</i> only.</p>
+        </div>
 
-    <!-- DRAG AND DROP UPLOAD AREA -->
-    <div class="upload-zone" id="uploadZone">
-
-        <div class="upload-icon">↑</div>
-
-        <h3>Upload your spectrum</h3>
-
-        <p>
-            Drag and drop a file here, or select one from your device.
-        </p>
-
-        <p class="file-requirements">
-            CSV or TXT · 6,000 intensity values · Maximum 2 MB
-        </p>
-
-        <!-- Hidden file input -->
-        <input
-            type="file"
-            id="spectrumFile"
-            accept=".csv,.txt"
-            hidden
-        >
-
-        <!-- Working file selection button -->
-        <button
-            type="button"
-            id="selectFileBtn"
-        >
-            Select File
-        </button>
-
-        <!-- Selected filename -->
-        <p id="selectedFileName"></p>
-
-    </div>
-
-
-    <!-- ANALYZE BUTTON -->
-    <div class="upload-actions">
-
-        <button
-            type="button"
-            id="analyzeBtn"
-            disabled
-        >
-            Analyze Spectrum
-        </button>
-
-        <!-- Upload status and error messages -->
-        <p
-            id="uploadMessage"
-            role="status"
-            aria-live="polite"
-        ></p>
-
-    </div>
-
-
-    <!-- PREDICTION RESULTS -->
-    <section
-        id="resultsSection"
-        class="results-section"
-        hidden
-    >
-
-        <h2>Prediction Results</h2>
-
-        <p class="simulation-warning">
-            Demonstration mode — these results are simulated.
-            They are not generated by a trained machine learning
-            model and must not be used for clinical decisions.
-        </p>
-
-        <!-- Six antibiotic cards inserted by JavaScript -->
-        <div
-            id="predictionCards"
-            class="prediction-grid"
-        ></div>
-
-    </section>
-
+        <div class="form-actions">
+            <button type="submit" id="analyzeBtn" class="button-primary" disabled>Analyze spectrum</button>
+            <button type="button" id="exampleBtn" class="button-quiet">Use an example spectrum</button>
+            <p id="uploadMessage" class="form-message" role="status" aria-live="polite"></p>
+        </div>
+    </form>
 </section>
 
+<section id="resultsSection" class="block results" aria-labelledby="resultsHeading" hidden>
+    <h2 id="resultsHeading">Results</h2>
+    <p id="resultsMeta" class="meta"></p>
 
-<!-- PROJECT INFORMATION CARDS -->
-<section class="info-grid">
-
-    <article class="info-card">
-        <h3>6 Antibiotics</h3>
-
-        <p>
-            Resistance classification for six selected antibiotics.
-        </p>
-    </article>
-
-    <article class="info-card">
-        <h3>S / R Predictions</h3>
-
-        <p>
-            Susceptible or resistant classification
-            for each antibiotic.
-        </p>
-    </article>
-
-    <article class="info-card">
-        <h3>Explainable Results</h3>
-
-        <p>
-            Explore informative spectral regions
-            from the research pipeline.
-        </p>
-    </article>
-
+    <table class="data-table results-table">
+        <thead>
+            <tr>
+                <th scope="col">Antibiotic</th>
+                <th scope="col">Call</th>
+                <th scope="col" class="num">Score</th>
+                <th scope="col" class="num">Threshold</th>
+            </tr>
+        </thead>
+        <tbody id="predictionRows"></tbody>
+    </table>
+    <p id="resultsNote" class="table-note"></p>
 </section>
 
+<section class="block" aria-labelledby="coverageHeading">
+    <h2 id="coverageHeading">Antibiotics</h2>
+    <p>
+        ATHAR has one model per antibiotic. An antibiotic without an installed model is skipped
+        during analysis.
+    </p>
+
+    <div class="table-scroll">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th scope="col">Antibiotic</th>
+                <th scope="col">Class</th>
+                <th scope="col">Model</th>
+                <th scope="col" class="num">CV AUPRC</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in antibiotics %}
+            <tr>
+                <th scope="row">{{ row.antibiotic }}</th>
+                <td>{{ row.drug_class }}</td>
+                <td>
+                    {% if row.status == "installed" %}{{ row.model.model_version }}
+                    {% elif row.status == "error" %}<span class="status-error">Could not be loaded</span>
+                    {% else %}<span class="status-muted">Not installed</span>{% endif %}
+                </td>
+                <td class="num">
+                    {% if row.model and row.model.metrics.cv_AUPRC is defined %}{{ "%.2f"|format(row.model.metrics.cv_AUPRC) }}{% else %}<span class="status-muted">–</span>{% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', path='/js/common.js') }}"></script>
+<script src="{{ url_for('static', path='/js/main.js') }}"></script>
 {% endblock %}

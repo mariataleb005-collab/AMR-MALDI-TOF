@@ -1,43 +1,68 @@
 {% extends "base.html" %}
 {% block title %}History{% endblock %}
 {% block content %}
-<section class="history-page">
-  <div class="history-heading">
+
+<section class="intro intro-with-control">
     <div>
-      <div class="eyebrow">ANALYSIS RECORDS</div>
-      <h1>Prediction History</h1>
-      <p>Local records of ATHAR demonstration analyses. Results are simulated, not clinical predictions.</p>
+        <h1>Analysis history</h1>
+        <p class="lead">
+            Every analysis run on this installation, newest first. ATHAR keeps the file name and the
+            calls, never the spectrum itself or any patient data.
+        </p>
     </div>
-    <a class="history-export" href="/api/history/export">Export CSV</a>
-  </div>
-  <div class="history-alert"><strong>Demonstration mode.</strong> All results stored here are simulated. No patient or spectrum intensity data is stored in history.</div>
-  <div class="history-stats">
-    <article><span>Analyses</span><strong id="statAnalyses">—</strong></article>
-    <article><span>Simulated resistant calls</span><strong id="statResistant">—</strong></article>
-    <article><span>Simulated susceptible calls</span><strong id="statSusceptible">—</strong></article>
-    <article><span>Antibiotics per analysis</span><strong id="statAntibiotics">6</strong></article>
-  </div>
-  <div class="history-panel">
-    <div class="history-toolbar">
-      <div><h2>Saved Analyses</h2><p>One record per successfully analyzed spectrum.</p></div>
-      <div class="history-filters">
-        <label for="historySearch" class="sr-only">Search filenames</label>
-        <input id="historySearch" type="search" placeholder="Search filename or record ID">
-        <label for="historyMode" class="sr-only">Filter by mode</label>
-        <select id="historyMode"><option value="all">All modes</option><option value="simulation">Demo / Simulated</option></select>
-      </div>
-    </div>
-    <div class="history-table-wrap">
-      <table class="history-table"><thead><tr><th>Record</th><th>Date (UTC)</th><th>Filename</th><th>Mode</th><th>R / S</th><th>Details</th></tr></thead><tbody id="historyRows"></tbody></table>
-    </div>
-    <div id="historyEmpty" class="history-empty" hidden>No analyses found. Upload a valid spectrum on the Predict page to create your first demo record.</div>
-    <p id="historyStatus" role="status" class="history-status">Loading records…</p>
-  </div>
-  <section class="history-panel history-details" id="historyDetails" hidden>
-    <div class="history-detail-heading"><h2>Analysis details</h2><button type="button" id="historyClose">Close</button></div>
-    <p id="historyDetailMeta"></p>
-    <div id="historyDetailResults" class="history-result-grid"></div>
-  </section>
+    <a class="button-secondary" href="/api/history/export" download>Download CSV</a>
 </section>
+
+<dl class="facts">
+    <div><dt>Analyses</dt><dd id="statAnalyses">—</dd></div>
+    <div><dt>Resistant calls</dt><dd id="statResistant">—</dd></div>
+    <div><dt>Susceptible calls</dt><dd id="statSusceptible">—</dd></div>
+    <div><dt>Indeterminate calls</dt><dd id="statIndeterminate">—</dd></div>
+</dl>
+
+<section class="block" aria-labelledby="recordsHeading">
+    <div class="block-head">
+        <h2 id="recordsHeading">Analyses</h2>
+        <div class="control control-inline">
+            <label for="historySearch" class="sr-only">Search by sample ID, file name or analysis number</label>
+            <input id="historySearch" type="search" placeholder="Sample, file or number">
+        </div>
+    </div>
+
+    <div class="table-scroll">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th scope="col">Analysis</th>
+                    <th scope="col">Date (UTC)</th>
+                    <th scope="col">Sample</th>
+                    <th scope="col">File</th>
+                    <th scope="col">Calls</th>
+                    <th scope="col"><span class="sr-only">Details</span></th>
+                </tr>
+            </thead>
+            <tbody id="historyRows"></tbody>
+        </table>
+    </div>
+    <p id="historyEmpty" class="empty" hidden>No analyses yet. <a href="/">Analyze a spectrum</a> to create the first record.</p>
+    <p id="historyStatus" class="table-note" role="status">Loading analyses…</p>
+</section>
+
+<section class="block" id="historyDetails" aria-labelledby="detailHeading" hidden>
+    <div class="block-head">
+        <h2 id="detailHeading">Analysis details</h2>
+        <button type="button" id="historyClose" class="button-quiet">Close</button>
+    </div>
+    <p id="historyDetailMeta" class="meta"></p>
+    <table class="data-table results-table">
+        <thead><tr><th scope="col">Antibiotic</th><th scope="col">Call</th><th scope="col" class="num">Score</th><th scope="col" class="num">Threshold</th></tr></thead>
+        <tbody id="historyDetailResults"></tbody>
+    </table>
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', path='/js/common.js') }}"></script>
 <script src="{{ url_for('static', path='/js/history.js') }}"></script>
 {% endblock %}

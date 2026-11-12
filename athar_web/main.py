@@ -1,147 +1,105 @@
+import csv
+from io import StringIO
 from pathlib import Path
 
-from fastapi import FastAPI, Request, UploadFile, File, HTTPException
-from fastapi.responses import HTMLResponse
+from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
+from fastapi.responses import HTMLResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-import csv
-from pathlib import PurePath
-from io import StringIO
-from fastapi.responses import StreamingResponse
-from .history_db import initialize, save_analysis, get_analyses
-from .predict import parse_spectrum, predict_resistance
+
+from .history_db import get_analyses, get_analysis, initialize, save_analysis
+from .predict import MAX_BYTES, parse_spectrum
+from .registry import Registry
+from .spectrum_trace import trace_path
 
 BASE_DIR = Path(__file__).resolve().parent
+SPECIES = "Escherichia coli"
 
 app = FastAPI(
     title="ATHAR",
-    description="Antimicrobial Resistance Prediction from MALDI-TOF Spectra",
-    version="0.2.0",
+    description="Antibiotic resistance prediction from E. coli MALDI-TOF spectra",
+    version="0.3.0",
 )
-
-app.mount(
-    "/static",
-    StaticFiles(directory=BASE_DIR / "static"),
-    name="static",
-)
+app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 
 templates = Jinja2Templates(directory=BASE_DIR / "templates")
+templates.env.globals["trace_path"] = trace_path
 
+registry = Registry()
 initialize()
 
 
+def page(request, name, title, **context):
+    return templates.TemplateResponse(request=request, name=name, context={"page_title": title, **context})
+
+
+# ---------------------------------------------------------------- pages
+
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
-    return templates.TemplateResponse(
-        request=request,
-        name="predict.html",
-        context={"page_title": "Predict"},
-    )
-
-
-@app.post("/api/predict")
-async def predict(file: UploadFile = File(...)):
-    if not file.filename:
-        raise HTTPException(status_code=400, detail="No filename provided.")
-
-    try:
-        # Read at most 2 MB + 1 byte.
-        file_bytes = await file.read(2_000_001)
-
-        spectrum = parse_spectrum(file_bytes, file.filename)
-        predictions = predict_resistance(spectrum)
-        # Store only the safe filename, never the uploaded spectrum itself.
-        safe_filename = file.filename.replace('\\', '/').split('/')[-1][:200]
-        analysis_id = save_analysis(safe_filename, len(spectrum), predictions)
-
-        return {
-            "analysis_id": analysis_id,
-            "filename": file.filename,
-            "feature_count": len(spectrum),
-            "mode": "simulation",
-            "predictions": predictions,
-            "disclaimer": (
-                "Simulated results only. Not a validated "
-                "machine learning or clinical prediction."
-            ),
-        }
-
-    except ValueError as error:
-        raise HTTPException(status_code=400, detail=str(error))
-    finally:
-        await file.close()
-
-
-ANTIBIOTICS = [
-    "Ciprofloxacin",
-    "Ceftriaxone",
-    "Cefepime",
-    "Piperacillin-Tazobactam",
-    "Tobramycin",
-    "Ampicillin-Amoxicillin",
-]
-
-RESULTS_DIR = BASE_DIR.parent / "results"
-
-
-@app.get("/regions", response_class=HTMLResponse)
-async def regions_page(request: Request):
-    return templates.TemplateResponse(
-        request=request,
-        name="regions.html",
-        context={"page_title": "Regions"},
-    )
-
-
-@app.get("/api/regions/{antibiotic}")
-async def get_regions(antibiotic: str):
-    if antibiotic not in ANTIBIOTICS:
-        raise HTTPException(
-            status_code=404,
-            detail="Unknown antibiotic."
-        )
-
-    csv_path = RESULTS_DIR / f"step3_regions_{antibiotic}.csv"
-
-    if not csv_path.is_file():
-        raise HTTPException(
-            status_code=404,
-            detail="Region results are not available."
-        )
-
-    with csv_path.open(
-        "r",
-        encoding="utf-8-sig",
-        newline=""
-    ) as file:
-        reader = csv.DictReader(file)
-        rows = list(reader)
-
-    return {
-        "antibiotic": antibiotic,
-	"signature_cv_auprc": float(rows[0]["signature_cv_AUPRC"]) if rows and rows[0].get("signature_cv_AUPRC") else None,
-        "regions": [
-            {
-                "region": int(row["region"]),
-                "mz_from": float(row["mz_from"]),
-                "mz_to": float(row["mz_to"]),
-                "peak_mz": float(row["peak_mz"]),
-                "ra_pso_seeds": int(row["RA-PSO_seeds"]),
-                "importance": float(row["dAUPRC_if_removed"]),
-                "direction": row["direction"],
-            }
-            for row in rows
-        ],
-    }
+    return page(request, "predict.html", "Analyze",
+                antibiotics=registry.catalogue(), installed_count=len(registry.installed))
 
 
 @app.get("/history", response_class=HTMLResponse)
 async def history_page(request: Request):
-    return templates.TemplateResponse(
-        request=request,
-        name="history.html",
-        context={"page_title": "History"},
-    )
+    return page(request, "history.html", "History")
+
+
+@app.get("/about", response_class=HTMLResponse)
+async def about_page(request: Request):
+    return page(request, "about.html", "About", antibiotics=registry.catalogue())
+
+
+# ---------------------------------------------------------------- API
+
+@app.get("/api/antibiotics")
+async def antibiotics():
+    return {"antibiotics": registry.catalogue(), "installed": len(registry.installed)}
+
+
+@app.post("/api/predict")
+async def predict(
+    file: UploadFile = File(...),
+    sample_id: str = Form(""),
+    species: str = Form(SPECIES),
+):
+    try:
+        if not file.filename:
+            raise HTTPException(status_code=400, detail="No file name was provided.")
+        if species != SPECIES:
+            raise HTTPException(
+                status_code=400,
+                detail="ATHAR's models were trained on Escherichia coli only, "
+                       "so no prediction is made for other species.",
+            )
+        file_bytes = await file.read(MAX_BYTES + 1)
+        try:
+            spectrum = parse_spectrum(file_bytes, file.filename)
+        except ValueError as error:
+            raise HTTPException(status_code=400, detail=str(error))
+    finally:
+        await file.close()
+
+    if not registry.installed:
+        raise HTTPException(
+            status_code=503,
+            detail="The spectrum file is valid, but no prediction model is installed yet.",
+        )
+
+    sample_id = sample_id.strip()[:40]
+    safe_filename = file.filename.replace("\\", "/").split("/")[-1][:200]
+    results = registry.predict(spectrum)
+    analysis_id = save_analysis(sample_id, species, safe_filename, len(spectrum), results)
+
+    return {
+        "analysis_id": analysis_id,
+        "sample_id": sample_id,
+        "species": species,
+        "filename": safe_filename,
+        "results": results,
+        "not_installed": [a for a in registry.catalogue() if a["status"] != "installed"],
+    }
 
 
 @app.get("/api/history")
@@ -152,23 +110,24 @@ async def history_records():
 
 @app.get("/api/history/export")
 async def export_history():
-    records = get_analyses()
     buffer = StringIO()
     writer = csv.writer(buffer)
-    writer.writerow(["analysis_id", "created_at_utc", "filename", "mode", "antibiotic", "result"])
-    for record in records:
-        for antibiotic, result in record["predictions"].items():
-            writer.writerow([record["id"], record["created_at"], record["filename"],
-                             record["mode"], antibiotic, result])
+    writer.writerow(["analysis_id", "created_at_utc", "sample_id", "species", "filename",
+                     "antibiotic", "call", "score", "score_type", "threshold", "model_version"])
+    for record in get_analyses():
+        for r in record["results"]:
+            writer.writerow([record["id"], record["created_at"], record["sample_id"], record["species"],
+                             record["filename"], r["antibiotic"], r["call"], r["score"], r["score_type"],
+                             r["threshold"], r["model_version"]])
     return StreamingResponse(
         iter([buffer.getvalue()]), media_type="text/csv; charset=utf-8",
-        headers={"Content-Disposition": 'attachment; filename="athar_demo_history.csv"'},
+        headers={"Content-Disposition": 'attachment; filename="athar_history.csv"'},
     )
 
-@app.get("/about", response_class=HTMLResponse)
-async def about_page(request: Request):
-    return templates.TemplateResponse(
-        request=request,
-        name="about.html",
-        context={"page_title": "About"},
-    )
+
+@app.get("/api/history/{analysis_id}")
+async def history_record(analysis_id: int):
+    record = get_analysis(analysis_id)
+    if record is None:
+        raise HTTPException(status_code=404, detail="No analysis with this number.")
+    return record

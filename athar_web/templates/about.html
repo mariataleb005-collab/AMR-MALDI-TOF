@@ -1,201 +1,79 @@
 {% extends "base.html" %}
 
-{% block title %}About ATHAR{% endblock %}
+{% block title %}About{% endblock %}
 
 {% block content %}
-<section class="about-page">
+<article class="prose-page">
 
-    <div class="about-heading">
-        <div class="eyebrow">ABOUT THE PROJECT</div>
-        <h1>About ATHAR <span>أثر</span></h1>
-        <p>
-            A research prototype for antimicrobial resistance
-            prediction in Escherichia coli using MALDI-TOF
-            mass spectrometry and machine learning.
-        </p>
-    </div>
+    <h1>About ATHAR <span class="arabic-inline" lang="ar">أثر</span></h1>
+    <p class="lead">
+        ATHAR is a research prototype that predicts antibiotic resistance in <i>Escherichia coli</i>
+        from MALDI-TOF mass spectra. Laboratories already record these spectra to identify the
+        species, so a resistance signal from the same spectrum could arrive a day or two before
+        phenotypic susceptibility testing is complete.
+    </p>
 
-    <div class="about-intro">
-        <div>
-            <h2>Understanding ATHAR</h2>
-            <p>
-                Antimicrobial resistance (AMR) is a major
-                challenge in modern healthcare. ATHAR explores
-                whether mass spectrometry data can support
-                computational prediction of antibiotic
-                susceptibility in E. coli.
-            </p>
-            <p>
-                The project investigates spectral representations,
-                feature-selection techniques, and machine-learning
-                classifiers to identify informative regions
-                associated with resistance patterns.
-            </p>
-        </div>
+    <p class="notice notice-warning">
+        ATHAR is not a clinically validated diagnostic device. Its output must not guide treatment
+        or replace antimicrobial susceptibility testing.
+    </p>
 
-        <div class="about-facts">
-            <div><strong>7,320</strong><span>DRIAMS-A spectra</span></div>
-            <div><strong>6,000</strong><span>Spectral bins</span></div>
-            <div><strong>6</strong><span>Antibiotics</span></div>
-            <div><strong>600</strong><span>Spectral regions</span></div>
-        </div>
-    </div>
+    <h2>Data</h2>
+    <table class="data-table key-value">
+        <tbody>
+            <tr><th scope="row">Source</th><td>DRIAMS-A, University Hospital Basel (Weis et al., 2022)</td></tr>
+            <tr><th scope="row">Species</th><td><i>Escherichia coli</i></td></tr>
+            <tr><th scope="row">Spectra</th><td class="num-left">7,320</td></tr>
+            <tr><th scope="row">Representation</th><td>6,000 bins of 3&nbsp;Da covering 2,000–20,000&nbsp;Da, as preprocessed by DRIAMS</td></tr>
+            <tr><th scope="row">Regions</th><td>600 regions of 10 consecutive bins (30&nbsp;Da each)</td></tr>
+            <tr><th scope="row">Labels</th><td>Susceptible = 0; intermediate or resistant = 1</td></tr>
+            <tr><th scope="row">Training data</th><td>2015–2017</td></tr>
+            <tr><th scope="row">Test data</th><td>2018, held out from all model development</td></tr>
+        </tbody>
+    </table>
 
-    <section class="about-section">
-        <div class="about-section-heading">
-            <span class="about-section-number">01</span>
-            <div>
-                <h2>Research Methodology</h2>
-                <p>From MALDI-TOF spectra to resistance prediction.</p>
-            </div>
-        </div>
+    <h2>How a prediction is made</h2>
+    <ol class="steps">
+        <li>The uploaded spectrum is checked: 6,000 finite, non-negative intensities.</li>
+        <li>For each antibiotic with an installed model, the spectrum is standardized with the
+            training-year statistics and reduced to the features that the model uses.</li>
+        <li>The model returns a score, which is compared with the threshold set on the training years.
+            A score at or above the threshold is reported as resistant.</li>
+        <li>The calls are saved in the history with the sample ID and file name. The spectrum itself
+            is not stored.</li>
+    </ol>
 
-        <div class="methodology-flow">
-            <div>
-                <span>01</span>
-                <strong>Data Preparation</strong>
-                <p>DRIAMS-A E. coli spectra and antibiotic labels.</p>
-            </div>
-            <div>
-                <span>02</span>
-                <strong>Spectral Representation</strong>
-                <p>Compare representations of the 6,000 spectral bins.</p>
-            </div>
-            <div>
-                <span>03</span>
-                <strong>Feature Selection</strong>
-                <p>Investigate informative m/z regions using RA-PSO and comparator methods.</p>
-            </div>
-            <div>
-                <span>04</span>
-                <strong>Classification & Evaluation</strong>
-                <p>Evaluate resistance prediction using cross-validation and temporal testing.</p>
-            </div>
-        </div>
-    </section>
+    <h2>Models</h2>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th scope="col">Antibiotic</th>
+                <th scope="col">Class</th>
+                <th scope="col">Model</th>
+                <th scope="col">Regions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in antibiotics %}
+            <tr>
+                <th scope="row">{{ row.antibiotic }}</th>
+                <td>{{ row.drug_class }}</td>
+                {% if row.model %}
+                <td>{{ row.model.classifier }} on {{ row.model.input }}, {{ row.model.model_version }}</td>
+                <td>{{ row.model.n_regions }}</td>
+                {% else %}
+                <td colspan="2"><span class="status-muted">Not installed</span></td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
-    <section class="about-section">
-        <div class="about-section-heading">
-            <span class="about-section-number">02</span>
-            <div>
-                <h2>Dataset & Evaluation</h2>
-                <p>Research design and validation protocol.</p>
-            </div>
-        </div>
+    <h2>Project</h2>
+    <p>
+        Senior project in Biomedical Informatics, University of Sharjah, 2026. Team and supervisor
+        details will be added once confirmed.
+    </p>
 
-        <div class="about-two-columns">
-            <div class="about-info-card">
-                <h3>Dataset</h3>
-                <p>
-                    ATHAR uses E. coli spectra from the
-                    DRIAMS-A dataset. Each spectrum is
-                    represented by 6,000 intensity bins
-                    spanning approximately 2,000–20,000 Da.
-                </p>
-                <p>
-                    Ten consecutive bins form one spectral
-                    region, resulting in 600 candidate regions.
-                </p>
-            </div>
-
-            <div class="about-info-card">
-                <h3>Evaluation Protocol</h3>
-                <p>
-                    Samples from 2015–2017 form the development
-                    dataset, with five stratified
-                    cross-validation folds.
-                </p>
-                <p>
-                    Data from 2018 is reserved as a temporal
-                    test set and excluded from model tuning.
-                </p>
-            </div>
-        </div>
-    </section>
-
-    <section class="about-section">
-        <div class="about-section-heading">
-            <span class="about-section-number">03</span>
-            <div>
-                <h2>Antibiotics Investigated</h2>
-                <p>Six antibiotic-specific resistance prediction tasks.</p>
-            </div>
-        </div>
-
-        <div class="about-antibiotics">
-            <div>Ciprofloxacin</div>
-            <div>Ceftriaxone</div>
-            <div>Cefepime</div>
-            <div>Piperacillin-Tazobactam</div>
-            <div>Tobramycin</div>
-            <div>Ampicillin-Amoxicillin</div>
-        </div>
-    </section>
-
-    <section class="about-section">
-        <div class="about-section-heading">
-            <span class="about-section-number">04</span>
-            <div>
-                <h2>System Status</h2>
-                <p>Research experiments and website integration.</p>
-            </div>
-        </div>
-
-        <div class="about-status">
-            <div>
-                <strong>Research experiments</strong>
-                <p>
-                    Spectral representation and feature-selection
-                    experiments are being evaluated.
-                    The Regions page displays actual saved
-                    experimental outputs.
-                </p>
-            </div>
-            <div>
-                <strong>Prediction interface</strong>
-                <p>
-                    The current website uses simulated S/R
-                    predictions to demonstrate the interface.
-                    Trained-model integration and validation
-                    are separate development steps.
-                </p>
-            </div>
-        </div>
-    </section>
-
-    <section class="about-section">
-        <div class="about-section-heading">
-            <span class="about-section-number">05</span>
-            <div>
-                <h2>Academic Project</h2>
-                <p>Senior Project in Biomedical Informatics.</p>
-            </div>
-        </div>
-
-        <div class="about-info-card">
-            <h3>University of Sharjah</h3>
-            <p>
-                ATHAR is developed as a senior graduation
-                project in Biomedical Informatics at the
-                University of Sharjah.
-            </p>
-            <p>
-                Project team and supervisor information will
-                be added after confirming the final details.
-            </p>
-        </div>
-    </section>
-
-    <div class="about-disclaimer">
-        <strong>Research-use notice</strong>
-        <p>
-            ATHAR is a research prototype, not a clinically
-            validated diagnostic device. Current website
-            predictions are simulated and must not be used
-            to guide patient treatment or replace laboratory
-            antimicrobial susceptibility testing.
-        </p>
-    </div>
-
-</section>
+</article>
 {% endblock %}
