@@ -1,0 +1,21 @@
+commit: b18fb83 (uncommitted changes)
+settings_sha: 69edaa3f5c1c
+date: 2026-11-12 23:03
+args: {'data_dir': '/Users/joud/Documents/senior new/data', 'labels_csv': 'data/labels_ecoli_A_corrected.csv', 'out_dir': 'results/exp4_ablation/', 'runner': 'joud', 'input': 'Var-2000', 'antibiotic': 'Ciprofloxacin', 'algorithms': 'ablation', 'budget': None, 'seeds': None, 'sample_frac': None, 'settings': '/Users/joud/Documents/GitHub/AMR-MALDI-TOF/config/experiment4_mopso.yaml', 'n_jobs': None, 'skip_final': False}
+algorithms: ['emopso-init', 'emopso-leader', 'emopso-vshape', 'emopso-inertia', 'emopso-mutation', 'emopso-restart', 'emopso-local', 'mopso+init']
+seeds: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+budget: 2000
+train 3536 (1084 non-S)  test 1375 (382 non-S)  units searched 254
+python 3.12.7  numpy 1.26.4  pandas 2.3.3
+search minutes: 125.4   total minutes: 165.4
+                 hv_rescored  chosen_columns  chosen_auprc_rescored  front_size  stability_chosen  search_sec
+algorithm                                                                                                    
+emopso-inertia        0.6797           102.5                 0.6795        28.9            0.4296      126.60
+emopso-init           0.6681           245.2                 0.6738        25.0            0.1674      783.83
+emopso-leader         0.6797           186.6                 0.6817        28.2            0.3206      275.22
+emopso-local          0.6728           175.2                 0.6784        21.6            0.2489      283.64
+emopso-mutation       0.6782           216.2                 0.6801        28.5            0.2760      517.96
+emopso-restart        0.6800           183.4                 0.6815        28.2            0.2980      300.44
+emopso-vshape         0.6711           423.9                 0.6766        27.6            0.2507     1079.41
+mopso+init            0.6474           348.8                 0.6657         9.2            0.4040     1493.52
+all budgets respected: True

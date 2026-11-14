@@ -1,0 +1,16 @@
+commit: b18fb83 (uncommitted changes)
+settings_sha: 69edaa3f5c1c
+date: 2026-11-12 03:32
+args: {'data_dir': '/Users/joud/Documents/senior new/data', 'labels_csv': 'data/labels_ecoli_A_corrected.csv', 'out_dir': 'results/exp4/', 'runner': 'joud', 'input': 'Raw-6000', 'antibiotic': 'Cefepime', 'algorithms': 'default', 'budget': None, 'seeds': None, 'sample_frac': None, 'settings': '/Users/joud/Documents/GitHub/AMR-MALDI-TOF/config/experiment4_mopso.yaml', 'n_jobs': None, 'skip_final': False}
+algorithms: ['emopso', 'mopso', 'nsga2']
+seeds: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+budget: 2000
+train 3524 (636 non-S)  test 1366 (203 non-S)  units searched 600
+python 3.12.7  numpy 1.26.4  pandas 2.3.3
+search minutes: 114.4   total minutes: 152.5
+           hv_rescored  chosen_columns  chosen_auprc_rescored  front_size  stability_chosen  search_sec
+algorithm                                                                                              
+emopso          0.5971           139.0                 0.5922        16.8            0.4804      411.74
+mopso           0.4697          2683.0                 0.5212        12.4            0.0158     3524.04
+nsga2           0.5946           167.0                 0.5994        11.0            0.2027      317.10
+all budgets respected: True
