@@ -1,0 +1,17 @@
+commit: b3766b5 (uncommitted changes)
+settings_sha: 06e24a1e4a28
+date: 2026-11-07 22:24
+args: {'data_dir': '/Users/joud/Documents/senior new/data', 'labels_csv': 'data/labels_ecoli_A_corrected.csv', 'out_dir': 'results/exp3/', 'runner': 'joud', 'input': 'Var-2000', 'antibiotic': None, 'budget': None, 'seeds': None, 'algorithms': 'binary_pso,ga,gwo,woa', 'classifier': None, 'settings': '/Users/joud/Documents/GitHub/AMR-MALDI-TOF/config/experiment3_settings.yaml', 'n_jobs': None, 'skip_final': False}
+cfg: {'budget': 2000, 'pop': 20, 'init_density': (0.01, 0.5), 'lam': 0.2, 'subsample': 0.9, 'classifier': 'KNN', 'svm': {'kernel': 'rbf', 'C': 10, 'gamma': 'scale', 'class_weight': 'balanced', 'standardise': True}, 'inner_folds': 3, 'inner_seed': 0}
+enhanced_pso params: {'inertia': [0.4, 0.9], 'c1': 1.49445, 'c2': 1.49445, 'vmax': 4.0, 'seed_regions': 30, 'stall': 5, 'subruns': 3, 'restart_fraction': 0.5, 'restart_flip': 0.02, 'subrun_train_fraction': 0.8} (defaults, not tuned yet)
+python 3.12.7  numpy 1.26.4  pandas 2.3.3
+search minutes: 34.4   total minutes: 41.9
+            fitness  n_columns  fitness_calls  search_sec
+algorithm                                                
+binary_pso    0.563    929.667         2000.0      1816.5
+ga            0.651    568.667         1996.0      1100.2
+gwo           0.696    291.333         2000.0       687.3
+woa           0.637    501.000         2000.0       791.4
+all budgets respected: True   all beat random: True
+
+RESCORE 2026-11-08 12:33: six-model scoring redone from the saved regions (commit 2e1550c (uncommitted changes), settings_sha 06e24a1e4a28); no search was repeated. Adds cv_AUROC. Took 7.2 min.
