@@ -237,7 +237,7 @@ input:hover, select:hover { border-color: var(--ink-3); }
 .form-message { flex-basis: 100%; margin: 0; font-size: 0.875rem; color: var(--ink-2); min-height: 1.4em; }
 .form-message.is-error { color: var(--res); }
 
-.button-primary, .button-secondary, .button-quiet, .button-link {
+.button-primary, .button-secondary, .button-quiet {
     font: inherit;
     font-size: 0.9375rem;
     cursor: pointer;
@@ -254,7 +254,6 @@ input:hover, select:hover { border-color: var(--ink-3); }
 .button-secondary:hover { border-color: var(--accent); color: var(--accent-ink); }
 .button-quiet { background: none; border: none; color: var(--accent); padding: 0 4px; min-height: 32px; text-decoration: underline; text-underline-offset: 0.15em; }
 .button-quiet:hover { color: var(--accent-ink); }
-.button-link { background: none; border: none; color: var(--accent); padding: 0; min-height: 0; text-decoration: underline; text-underline-offset: 0.15em; }
 
 .control { display: flex; flex-direction: column; gap: 6px; }
 .control label { font-size: 0.8125rem; color: var(--ink-2); font-weight: 500; }
@@ -289,7 +288,6 @@ input:hover, select:hover { border-color: var(--ink-3); }
 }
 .data-table tbody th { font-weight: 500; }
 .data-table .num { text-align: right; padding-right: 20px; }
-.data-table.compact td, .data-table.compact th { padding-top: 7px; padding-bottom: 7px; }
 .data-table tbody tr[tabindex] { cursor: pointer; }
 .data-table tbody tr[tabindex]:hover, .data-table tbody tr[tabindex]:focus-visible { background: var(--wash); }
 .data-table tbody tr[tabindex]:focus-visible { outline-offset: -2px; }
@@ -330,8 +328,6 @@ input:hover, select:hover { border-color: var(--ink-3); }
 /* Charts */
 
 .chart-frame { border: 1px solid var(--rule); border-radius: var(--radius); padding: 8px 4px 0; }
-.region-detail { background: var(--wash); border-left: 3px solid var(--accent); padding: 10px 14px; margin-top: 12px; }
-.region-detail p { margin: 0; font-size: 0.9375rem; }
 
 /* Prose pages */
 
@@ -386,6 +382,12 @@ input:hover, select:hover { border-color: var(--ink-3); }
 .link-list { padding-left: 1.1rem; margin: 0; }
 .link-list li { margin-bottom: 6px; }
 .link-list .status-muted { margin-left: 6px; font-size: 0.875rem; }
+
+.explain-summary { margin: 4px 0 12px; }
+.chart-small { margin-top: 4px; }
+.effect { font-weight: 500; white-space: nowrap; }
+.effect-r { color: var(--res); }
+.effect-s { color: var(--sus); }
 
 /* Printable report */
 

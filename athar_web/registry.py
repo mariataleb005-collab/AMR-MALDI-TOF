@@ -71,8 +71,8 @@ class Model:
     def uses_mz_regions(self):
         return self.meta["input"] != "PCA-200"
 
-    def score(self, spectrum):
-        """Score one spectrum of 6,000 intensities on the same scale as the training threshold."""
+    def _features(self, spectrum):
+        """Model input for one spectrum: the selected columns, built as in training."""
         x = np.asarray(spectrum, dtype=np.float32).reshape(1, -1)
         z = self.parts["scaler"].transform(x).astype(np.float32)
         if self.parts.get("pca") is not None:
@@ -80,13 +80,46 @@ class Model:
         else:
             cols = self.parts["columns"]
             features = z[:, cols] if self.parts["scaled"] else x[:, cols]
-        features = features[:, self.parts["selected"]]
+        return features[:, self.parts["selected"]]
+
+    def _scores(self, features):
         estimator = self.parts["estimator"]
         if self.meta["score_type"] == "decision":
-            return float(estimator.decision_function(features)[0])
-        return float(estimator.predict_proba(features)[0, 1])
+            return estimator.decision_function(features)
+        return estimator.predict_proba(features)[:, 1]
 
-    def predict(self, spectrum):
+    def _feature_units(self):
+        """Region id (or PCA component id) of each selected feature, and its training-average value."""
+        selected = np.asarray(self.parts["selected"])
+        if self.parts.get("pca") is not None:
+            return selected, np.zeros(len(selected), dtype=np.float32)   # components of centred data
+        bins = np.asarray(self.parts["columns"])[selected]
+        if self.parts["scaled"]:
+            baseline = np.zeros(len(selected), dtype=np.float32)         # standardised training mean
+        else:
+            baseline = self.parts["scaler"].mean_[bins].astype(np.float32)
+        return bins // 10, baseline
+
+    def score(self, spectrum):
+        """Score one spectrum of 6,000 intensities on the same scale as the training threshold."""
+        return float(self._scores(self._features(spectrum))[0])
+
+    def explain(self, spectrum):
+        """Region occlusion: replace each region with its training average and record how far the score
+        moves. effect > 0 means the region pushed this sample towards resistant."""
+        features = self._features(spectrum)
+        units, baseline = self._feature_units()
+        unique = np.unique(units)
+        masked = np.repeat(features, len(unique), axis=0)
+        for row, unit in enumerate(unique):
+            cols = units == unit
+            masked[row, cols] = baseline[cols]
+        base = float(self._scores(features)[0])
+        effects = base - self._scores(masked)
+        order = np.argsort(-np.abs(effects), kind="stable")
+        return [{"unit": int(unique[i]), "effect": round(float(effects[i]), 6)} for i in order]
+
+    def predict(self, spectrum, explain=True):
         value = self.score(spectrum)
         threshold = float(self.meta["threshold"])
         band = self.meta.get("indeterminate_band")
@@ -94,14 +127,18 @@ class Model:
             call = "I"
         else:
             call = "R" if value >= threshold else "S"
-        return {
+        result = {
             "antibiotic": self.antibiotic,
             "call": call,
             "score": round(value, 6),
             "score_type": self.meta["score_type"],
             "threshold": threshold,
             "model_version": self.meta["model_version"],
+            "unit_type": "region" if self.uses_mz_regions else "component",
         }
+        if explain:
+            result["explanation"] = self.explain(spectrum)
+        return result
 
     def summary(self):
         m = self.meta

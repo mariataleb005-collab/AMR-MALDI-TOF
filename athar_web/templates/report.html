@@ -47,6 +47,7 @@
                 <th scope="col" class="num">Score</th>
                 <th scope="col" class="num">Threshold</th>
                 <th scope="col">WHO AWaRe</th>
+                <th scope="col">Largest effect</th>
                 <th scope="col">Model</th>
             </tr>
         </thead>
@@ -64,6 +65,12 @@
                 <td class="num">{{ "%.3f"|format(r.threshold) }}</td>
                 {% endif %}
                 <td>{{ s.aware }}</td>
+                <td>
+                    {% set top = (s.regions if s.has_effects else []) | first %}
+                    {% if top %}{{ "{:,}".format(top.mz_from) }}–{{ "{:,}".format(top.mz_to) }} Da ({{ effect_text(top.effect, r.score_type) }})
+                    {% elif s.components %}Component {{ s.components[0].unit }} ({{ effect_text(s.components[0].effect, r.score_type) }})
+                    {% else %}–{% endif %}
+                </td>
                 <td>{{ r.model_version }}</td>
             </tr>
         {% endfor %}
@@ -86,6 +93,8 @@
         <li>A score at or above the model's threshold is reported as resistant. Thresholds were set on
             the DRIAMS-A training spectra (2015–2017). Intermediate results were counted as resistant.</li>
         <li>Indeterminate means the score was too close to the threshold to call.</li>
+        <li>Largest effect is the region whose replacement by its training average changed the score most.
+            A positive value means the region pushed the score towards resistant.</li>
         <li>These results come from a research prototype. They must not guide treatment and must be
             confirmed by phenotypic antimicrobial susceptibility testing.</li>
     </ul>

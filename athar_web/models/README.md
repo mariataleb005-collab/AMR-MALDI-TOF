@@ -19,6 +19,8 @@ The app reads this folder when it starts. After adding or replacing a model, res
 
 ## model.json
 
+Example (the numbers are illustrative, not real results):
+
 ```json
 {
   "schema_version": 1,

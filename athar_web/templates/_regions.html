@@ -1,10 +1,11 @@
 {# Table of a model's m/z regions with candidate proteins. show_peak adds this spectrum's peak. #}
-{% macro region_table(regions, show_peak=False, protein_table=True) %}
+{% macro region_table(regions, show_peak=False, protein_table=True, effect_text=none, score_type="decision") %}
 <div class="table-scroll">
 <table class="data-table region-table">
     <thead>
         <tr>
             <th scope="col">m/z window (Da)</th>
+            {% if effect_text %}<th scope="col" class="num">Effect</th>{% endif %}
             {% if show_peak %}<th scope="col" class="num">Highest bin in this spectrum</th>{% endif %}
             <th scope="col">Candidate <i>E. coli</i> proteins</th>
         </tr>
@@ -13,6 +14,9 @@
     {% for r in regions %}
         <tr>
             <th scope="row">{{ "{:,}".format(r.mz_from) }}–{{ "{:,}".format(r.mz_to) }}</th>
+            {% if effect_text %}
+            <td class="num effect {{ 'effect-r' if r.effect > 0 else ('effect-s' if r.effect < 0 else '') }}">{{ effect_text(r.effect, score_type) }}</td>
+            {% endif %}
             {% if show_peak %}
             <td class="num">{{ "{:,.1f}".format(r.peak_mz) }} <span class="status-muted">({{ "%.5f"|format(r.peak_intensity) }})</span></td>
             {% endif %}

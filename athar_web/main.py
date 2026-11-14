@@ -42,12 +42,11 @@ def catalogue():
     return rows
 
 
-def region_rows(model, spectrum=None):
-    """The model's m/z regions, with this spectrum's highest bin in each and candidate proteins."""
-    if model is None or not model.uses_mz_regions:
-        return []
+def region_rows(regions, spectrum=None, effects=None):
+    """m/z regions with this spectrum's highest bin in each, the effect on this prediction and candidate
+    proteins. Sorted by the size of the effect when there is one, otherwise by m/z."""
     rows = []
-    for region in sorted(int(r) for r in model.meta["regions"]):
+    for region in sorted(int(r) for r in regions):
         mz_from, mz_to = proteins.region_mz(region)
         row = {"region": region, "mz_from": mz_from, "mz_to": mz_to,
                "candidates": proteins.candidates(region), "search_url": proteins.uniprot_search_url(region)}
@@ -56,8 +55,34 @@ def region_rows(model, spectrum=None):
             top = max(range(10), key=bins.__getitem__)
             row["peak_mz"] = 2000 + 3 * (10 * region + top) + 1.5
             row["peak_intensity"] = bins[top]
+        if effects is not None:
+            row["effect"] = effects.get(region, 0.0)
         rows.append(row)
+    if effects is not None:
+        rows.sort(key=lambda r: -abs(r["effect"]))
     return rows
+
+
+def model_regions(model):
+    return region_rows(model.meta["regions"]) if model is not None and model.uses_mz_regions else []
+
+
+def effect_text(value, score_type):
+    """Signed effect in the units of the score: percentage points for probabilities."""
+    return f"{value * 100:+.1f} points" if score_type == "probability" else f"{value:+.3f}"
+
+
+def explanation_summary(result, rows, components):
+    """One plain sentence about the largest effect on this call."""
+    items = [r for r in (rows or components) if "effect" in r]
+    if not items or items[0]["effect"] == 0:
+        return None
+    top = items[0]
+    where = (f"the region at {top['mz_from']:,}–{top['mz_to']:,} Da" if rows
+             else f"PCA component {top['unit']}")
+    direction = "towards resistant" if top["effect"] > 0 else "towards susceptible"
+    size = effect_text(abs(top["effect"]), result["score_type"]).lstrip("+")
+    return f"The largest effect came from {where}, which moved the score {direction} by {size}."
 
 
 def load_analysis(analysis_id):
@@ -72,16 +97,28 @@ def analysis_context(record):
     sections = []
     for result in record["results"]:
         model = registry.models.get(result["antibiotic"])
+        explanation = result.get("explanation") or []
+        effects = {e["unit"]: e["effect"] for e in explanation}
+        uses_regions = result.get("unit_type", "region") == "region"
         same_model = model is not None and model.meta["model_version"] == result["model_version"]
+        if explanation and uses_regions:
+            rows = region_rows(effects.keys(), spectrum, effects)
+        elif same_model and model.uses_mz_regions:
+            rows = region_rows(model.meta["regions"], spectrum)
+        else:
+            rows = []
+        components = [] if uses_regions else [{"unit": e["unit"], "effect": e["effect"]} for e in explanation]
         sections.append({
             "result": result,
             "slug": knowledge.slug(result["antibiotic"]),
             "aware": knowledge.INFO[result["antibiotic"]][0],
-            "model_input": model.meta["input"] if same_model else None,
-            "regions": region_rows(model, spectrum) if same_model else [],
-            "model_changed": not same_model,
+            "regions": rows,
+            "components": components,
+            "summary": explanation_summary(result, rows, components),
+            "has_effects": bool(explanation),
         })
-    return {"record": record, "sections": sections, "protein_table": proteins.table_available()}
+    return {"record": record, "sections": sections, "protein_table": proteins.table_available(),
+            "effect_text": effect_text}
 
 
 # ---------------------------------------------------------------- pages
@@ -94,10 +131,20 @@ async def home(request: Request):
 
 @app.get("/analysis/{analysis_id}", response_class=HTMLResponse)
 async def analysis_page(request: Request, analysis_id: int):
-    record = load_analysis(analysis_id)
-    shading = {sec["result"]["antibiotic"]: [[r["mz_from"], r["mz_to"]] for r in sec["regions"]]
-               for sec in analysis_context(record)["sections"]}
-    return page(request, "analysis.html", "History", shading=shading, **analysis_context(record))
+    context = analysis_context(load_analysis(analysis_id))
+    chart = {}
+    for sec in context["sections"]:
+        if sec["regions"]:
+            bars = [{"label": f"{r['mz_from']:,}–{r['mz_to']:,} Da", "effect": r["effect"]}
+                    for r in sec["regions"][:10] if "effect" in r]
+        else:
+            bars = [{"label": f"Component {c['unit']}", "effect": c["effect"]} for c in sec["components"][:10]]
+        chart[sec["result"]["antibiotic"]] = {
+            "shading": [[r["mz_from"], r["mz_to"]] for r in sec["regions"]],
+            "effects": bars,
+            "score_type": sec["result"]["score_type"],
+        }
+    return page(request, "analysis.html", "History", chart=chart, **context)
 
 
 @app.get("/analysis/{analysis_id}/report", response_class=HTMLResponse)
@@ -122,7 +169,7 @@ async def antibiotic_page(request: Request, name: str):
                 drug_class=ANTIBIOTICS[antibiotic], info=knowledge.details(antibiotic),
                 model=model.summary() if model else None, model_error=registry.errors.get(antibiotic),
                 model_input=model.meta["input"] if model else None,
-                regions=region_rows(model), protein_table=proteins.table_available())
+                regions=model_regions(model), protein_table=proteins.table_available())
 
 
 @app.get("/history", response_class=HTMLResponse)

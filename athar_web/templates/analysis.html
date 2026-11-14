@@ -62,48 +62,70 @@
     </p>
 </section>
 
-{% set with_regions = sections|selectattr("regions")|list %}
+{% set explained = sections|selectattr("has_effects")|list %}
+{% set shown = sections|selectattr("regions")|list %}
 <section class="block" aria-labelledby="spectrumHeading">
     <div class="block-head">
-        <h2 id="spectrumHeading">Spectrum and model regions</h2>
-        {% if with_regions %}
+        <h2 id="spectrumHeading">What drove each call</h2>
+        {% if shown or explained %}
         <div class="control control-inline">
-            <label for="regionAntibiotic">Show regions for</label>
+            <label for="regionAntibiotic">Antibiotic</label>
             <select id="regionAntibiotic">
-                {% for s in with_regions %}
+                {% for s in sections if s.regions or s.components %}
                 <option value="{{ s.slug }}" data-name="{{ s.result.antibiotic }}">{{ s.result.antibiotic }}</option>
                 {% endfor %}
             </select>
         </div>
         {% endif %}
     </div>
+    <p>
+        For each region the model uses, ATHAR replaces that part of the spectrum with its average over the
+        training spectra and scores the sample again. The change in score is the region's effect on this call.
+    </p>
 
     {% if record.spectrum %}
     <div class="chart-frame"><div id="spectrumChart" aria-label="Uploaded spectrum with the selected model's regions shaded"></div></div>
     <p class="chart-caption">
-        Shaded bands are the m/z regions the selected model uses. Drag across the plot to zoom; double-click to reset.
+        Shaded bands are the regions of the selected model. Drag across the plot to zoom; double-click to reset.
     </p>
     {% else %}
     <p class="status-muted">This analysis has no stored spectrum.</p>
     {% endif %}
 
-    {% for s in with_regions %}
+    {% for s in sections if s.regions or s.components %}
     <div class="region-panel" data-regions="{{ s.slug }}" {% if not loop.first %}hidden{% endif %}>
-        <h3>{{ s.result.antibiotic }}: {{ s.regions|length }} regions</h3>
-        {{ region_table(s.regions, show_peak=True, protein_table=protein_table) }}
+        <h3>{{ s.result.antibiotic }}</h3>
+        {% if s.summary %}<p class="explain-summary">{{ s.summary }}</p>{% endif %}
+        {% if s.has_effects %}
+        <div class="chart-frame chart-small"><div class="effect-chart" data-effects="{{ s.result.antibiotic }}"
+             aria-label="Effect of the top regions on the {{ s.result.antibiotic }} score"></div></div>
+        <p class="chart-caption">
+            Bars to the right pushed the score towards resistant; bars to the left, towards susceptible.
+            {% if s.result.score_type == "probability" %}Effects are in percentage points of probability.{% else %}Effects are in units of the model's decision score.{% endif %}
+        </p>
+        {% endif %}
+        {% if s.regions %}
+        {{ region_table(s.regions, show_peak=True, protein_table=protein_table, effect_text=effect_text if s.has_effects else none, score_type=s.result.score_type) }}
+        {% else %}
+        <table class="data-table results-table">
+            <thead><tr><th scope="col">PCA component</th><th scope="col" class="num">Effect</th></tr></thead>
+            <tbody>
+            {% for c in s.components %}
+                <tr><th scope="row">{{ c.unit }}</th><td class="num">{{ effect_text(c.effect, s.result.score_type) }}</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <p class="table-note">This model uses PCA components, which combine many m/z bins, so they have no single m/z position.</p>
+        {% endif %}
     </div>
     {% endfor %}
 
-    {% for s in sections if not s.regions %}
-    <p class="table-note">
-        {{ s.result.antibiotic }}:
-        {% if s.model_changed %}the model has changed since this analysis, so its regions are not shown.
-        {% else %}this model uses PCA components, which have no single m/z position.{% endif %}
-    </p>
+    {% for s in sections if not s.regions and not s.components %}
+    <p class="table-note">{{ s.result.antibiotic }}: the model has changed since this analysis, so its regions are not shown.</p>
     {% endfor %}
 </section>
 
-<script id="regionData" type="application/json">{{ shading|tojson }}</script>
+<script id="chartData" type="application/json">{{ chart|tojson }}</script>
 {% endblock %}
 
 {% block scripts %}

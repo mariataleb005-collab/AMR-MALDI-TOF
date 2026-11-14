@@ -4,13 +4,14 @@ Stores the sample ID, file name, the spectrum (6,000 intensities, compressed) an
 analysis. No patient data is stored.
 """
 import json
+import os
+import sqlite3
 import zlib
 from array import array
-import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
 
-DB_PATH = Path(__file__).resolve().parent / "history.sqlite3"
+DB_PATH = Path(os.environ.get("ATHAR_DB_PATH", Path(__file__).resolve().parent / "history.sqlite3"))
 
 
 def connect():
@@ -21,10 +22,6 @@ def connect():
 
 def initialize():
     with connect() as db:
-        columns = {row["name"] for row in db.execute("PRAGMA table_info(analyses)")}
-        if columns and "results_json" not in columns:
-            # Records from the earlier simulated version are kept aside, not shown.
-            db.execute("ALTER TABLE analyses RENAME TO analyses_simulated_legacy")
         db.execute("""CREATE TABLE IF NOT EXISTS analyses (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             created_at TEXT NOT NULL,
@@ -35,9 +32,6 @@ def initialize():
             results_json TEXT NOT NULL,
             spectrum BLOB
         )""")
-        columns = {row["name"] for row in db.execute("PRAGMA table_info(analyses)")}
-        if "spectrum" not in columns:
-            db.execute("ALTER TABLE analyses ADD COLUMN spectrum BLOB")
 
 
 def pack(spectrum):
