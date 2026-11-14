@@ -1,0 +1,21 @@
+commit: 4b2dcbf (uncommitted changes)
+settings_sha: fc3daf9dcae2
+date: 2026-11-11 20:42
+args: {'data_dir': 'C:\\Users\\maria\\OneDrive\\Desktop\\Senior_Project\\Extracted_Bacteria (Coli+Aureus)\\shared_data', 'labels_csv': 'data/labels_ecoli_A_corrected.csv', 'out_dir': 'results/exp4_ablation/', 'runner': 'maria', 'input': 'Var-2000', 'antibiotic': None, 'algorithms': 'ablation', 'budget': None, 'seeds': None, 'sample_frac': None, 'settings': 'C:\\Users\\maria\\OneDrive\\Desktop\\AMR-MALDI-TOF\\config\\experiment4_mopso.yaml', 'n_jobs': None, 'skip_final': False}
+algorithms: ['emopso-init', 'emopso-leader', 'emopso-vshape', 'emopso-inertia', 'emopso-mutation', 'emopso-restart', 'emopso-local', 'mopso+init']
+seeds: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+budget: 2000
+train 3575 (830 non-S)  test 1386 (256 non-S)  units searched 255
+python 3.12.10  numpy 1.26.4  pandas 2.3.3
+search minutes: 190.7   total minutes: 218.5
+                 hv_rescored  chosen_columns  chosen_auprc_rescored  front_size  stability_chosen  search_sec
+algorithm                                                                                                    
+emopso-inertia        0.7288           109.4                 0.7293        30.0            0.5228      363.42
+emopso-init           0.7250           275.7                 0.7360        25.4            0.2447     2469.93
+emopso-leader         0.7290           167.7                 0.7311        28.5            0.3616      742.91
+emopso-local          0.7219           188.8                 0.7313        20.7            0.2927      948.04
+emopso-mutation       0.7336           221.6                 0.7376        28.8            0.3481     1786.81
+emopso-restart        0.7304           189.0                 0.7325        29.4            0.3735      969.48
+emopso-vshape         0.7229           509.2                 0.7318        28.9            0.1688     4052.76
+mopso+init            0.6957           739.2                 0.7265        10.1            0.0475     3959.62
+all budgets respected: True

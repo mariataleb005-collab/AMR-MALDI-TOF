@@ -1,0 +1,16 @@
+commit: 96582cc (uncommitted changes)
+settings_sha: fc3daf9dcae2
+date: 2026-11-11 15:40
+args: {'data_dir': 'C:\\Users\\maria\\OneDrive\\Desktop\\Senior_Project\\Extracted_Bacteria (Coli+Aureus)\\shared_data', 'labels_csv': 'data/labels_ecoli_A_corrected.csv', 'out_dir': 'results/exp4/', 'runner': 'maria', 'input': 'PCA-200', 'antibiotic': None, 'algorithms': 'default', 'budget': None, 'seeds': None, 'sample_frac': None, 'settings': 'C:\\Users\\maria\\OneDrive\\Desktop\\AMR-MALDI-TOF\\config\\experiment4_mopso.yaml', 'n_jobs': None, 'skip_final': False}
+algorithms: ['emopso', 'mopso', 'nsga2']
+seeds: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+budget: 2000
+train 3463 (795 non-S)  test 1363 (382 non-S)  units searched 200
+python 3.12.10  numpy 1.26.4  pandas 2.3.3
+search minutes: 2.7   total minutes: 6.4
+           hv_rescored  chosen_columns  chosen_auprc_rescored  front_size  stability_chosen  search_sec
+algorithm                                                                                              
+emopso          0.3996            23.5                 0.4010        26.1            0.6855       50.90
+mopso           0.3204            85.2                 0.3519        12.2            0.0567      114.88
+nsga2           0.3756            12.9                 0.3769        14.7            0.4743       44.66
+all budgets respected: True
