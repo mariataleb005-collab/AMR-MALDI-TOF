@@ -1,0 +1,16 @@
+commit: unknown
+settings_sha: 69edaa3f5c1c
+date: 2026-11-11 07:41
+args: {'data_dir': 'data/', 'labels_csv': 'data/labels_ecoli_A_corrected.csv', 'out_dir': 'results/exp4/', 'runner': 'zainab', 'input': 'PCA-200', 'antibiotic': None, 'algorithms': 'default', 'budget': None, 'seeds': None, 'sample_frac': None, 'settings': 'C:\\Users\\Dell\\Downloads\\AMR-MALDI-TOF-main\\AMR-MALDI-TOF-main\\config\\experiment4_mopso.yaml', 'n_jobs': None, 'skip_final': False}
+algorithms: ['emopso', 'mopso', 'nsga2']
+seeds: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+budget: 2000
+train 3509 (2102 non-S)  test 1357 (811 non-S)  units searched 200
+python 3.12.7  numpy 1.26.4  pandas 2.3.3
+search minutes: 10.7   total minutes: 24.1
+           hv_rescored  chosen_columns  chosen_auprc_rescored  front_size  stability_chosen  search_sec
+algorithm                                                                                              
+emopso          0.7863            28.1                 0.7916        28.2            0.7373       96.18
+mopso           0.7157            98.3                 0.7720        13.3            0.0373      249.73
+nsga2           0.7642            18.5                 0.7778        15.5            0.5480       79.89
+all budgets respected: True

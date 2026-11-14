@@ -1,0 +1,21 @@
+commit: unknown
+settings_sha: 69edaa3f5c1c
+date: 2026-11-14 00:54
+args: {'data_dir': 'data/', 'labels_csv': 'data/labels_ecoli_A_corrected.csv', 'out_dir': 'results/exp4_ablation/', 'runner': 'zainab', 'input': 'Var-2000', 'antibiotic': None, 'algorithms': 'ablation', 'budget': None, 'seeds': None, 'sample_frac': None, 'settings': 'C:\\Users\\Dell\\Downloads\\AMR-MALDI-TOF-main\\AMR-MALDI-TOF-main\\config\\experiment4_mopso.yaml', 'n_jobs': None, 'skip_final': False}
+algorithms: ['emopso-init', 'emopso-leader', 'emopso-vshape', 'emopso-inertia', 'emopso-mutation', 'emopso-restart', 'emopso-local', 'mopso+init']
+seeds: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+budget: 2000
+train 3509 (2102 non-S)  test 1357 (811 non-S)  units searched 253
+python 3.12.7  numpy 1.26.4  pandas 2.3.3
+search minutes: 352.4   total minutes: 447.5
+                 hv_rescored  chosen_columns  chosen_auprc_rescored  front_size  stability_chosen  search_sec
+algorithm                                                                                                    
+emopso-inertia        0.7914           131.0                 0.7922        29.9            0.3500      418.59
+emopso-init           0.7860           289.2                 0.7915        27.0            0.1616     1843.28
+emopso-leader         0.7923           182.6                 0.7932        29.8            0.2833      818.77
+emopso-local          0.7868           186.7                 0.7925        21.9            0.2222      843.08
+emopso-mutation       0.7888           216.4                 0.7898        29.2            0.2158     1612.12
+emopso-restart        0.7902           160.5                 0.7905        29.0            0.3016      894.84
+emopso-vshape         0.7864           335.6                 0.7884        29.2            0.2633     2944.09
+mopso+init            0.7724           423.7                 0.7834        11.6            0.2544     4150.00
+all budgets respected: True
