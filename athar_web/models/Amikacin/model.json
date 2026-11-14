@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "antibiotic": "Amikacin",
+  "model_version": "emopso-Raw-6000-2026-11-14",
+  "input": "Raw-6000",
+  "selector": "emopso",
+  "classifier": "LightGBM",
+  "regions": [
+    5,
+    27,
+    129,
+    162,
+    163,
+    167,
+    216
+  ],
+  "region_votes": {
+    "5": 5,
+    "27": 6,
+    "129": 5,
+    "162": 7,
+    "163": 10,
+    "167": 7,
+    "216": 8
+  },
+  "region_rule": "consensus: chosen by >= 5 of 10 seeds",
+  "threshold": 0.06634497223098756,
+  "threshold_rule": "Youden, out-of-fold CV predictions, 2015-2017",
+  "score_type": "probability",
+  "indeterminate_band": null,
+  "training": {
+    "years": "2015-2017",
+    "n_spectra": 3498,
+    "n_resistant": 264
+  },
+  "metrics": {
+    "cv_AUPRC": 0.32839170179323857,
+    "cv_AUROC": 0.7877903546748499,
+    "evaluation": "5-fold CV on 2015-2017"
+  },
+  "source": {
+    "file": "Amikacin.joblib",
+    "commit": "b9ab005 (uncommitted changes)",
+    "created": "2026-11-14 12:55",
+    "versions": {
+      "python": "3.12.10",
+      "numpy": "1.26.4",
+      "sklearn": "1.5.1",
+      "xgboost": "3.2.0",
+      "lightgbm": "4.6.0"
+    }
+  }
+}

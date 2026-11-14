@@ -64,7 +64,14 @@ def region_rows(regions, spectrum=None, effects=None):
 
 
 def model_regions(model):
-    return region_rows(model.meta["regions"]) if model is not None and model.uses_mz_regions else []
+    if model is None or not model.uses_mz_regions:
+        return []
+    rows = region_rows(model.meta["regions"])
+    votes = model.meta.get("region_votes") or {}
+    for row in rows:
+        if str(row["region"]) in votes:
+            row["votes"] = votes[str(row["region"])]
+    return rows
 
 
 def effect_text(value, score_type):

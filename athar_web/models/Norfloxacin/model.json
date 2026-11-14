@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "antibiotic": "Norfloxacin",
+  "model_version": "emopso-Raw-6000-2026-11-14",
+  "input": "Raw-6000",
+  "selector": "emopso",
+  "classifier": "LightGBM",
+  "regions": [
+    35,
+    107,
+    129,
+    160,
+    162,
+    163,
+    167,
+    203,
+    209,
+    282,
+    291,
+    325,
+    326
+  ],
+  "region_votes": {
+    "35": 5,
+    "107": 6,
+    "129": 7,
+    "160": 6,
+    "162": 5,
+    "163": 6,
+    "167": 5,
+    "203": 6,
+    "209": 5,
+    "282": 9,
+    "291": 9,
+    "325": 9,
+    "326": 10
+  },
+  "region_rule": "consensus: chosen by >= 5 of 10 seeds",
+  "threshold": 0.38083044737999483,
+  "threshold_rule": "Youden, out-of-fold CV predictions, 2015-2017",
+  "score_type": "probability",
+  "indeterminate_band": null,
+  "training": {
+    "years": "2015-2017",
+    "n_spectra": 1043,
+    "n_resistant": 295
+  },
+  "metrics": {
+    "cv_AUPRC": 0.6867136429472421,
+    "cv_AUROC": 0.795300951730937,
+    "evaluation": "5-fold CV on 2015-2017"
+  },
+  "source": {
+    "file": "Norfloxacin.joblib",
+    "commit": "b9ab005 (uncommitted changes)",
+    "created": "2026-11-14 12:57",
+    "versions": {
+      "python": "3.12.10",
+      "numpy": "1.26.4",
+      "sklearn": "1.5.1",
+      "xgboost": "3.2.0",
+      "lightgbm": "4.6.0"
+    }
+  }
+}

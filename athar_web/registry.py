@@ -74,6 +74,8 @@ class Model:
     def _features(self, spectrum):
         """Model input for one spectrum: the selected columns, built as in training."""
         x = np.asarray(spectrum, dtype=np.float32).reshape(1, -1)
+        if "bins" in self.parts:
+            return x[:, self.parts["bins"]]
         z = self.parts["scaler"].transform(x).astype(np.float32)
         if self.parts.get("pca") is not None:
             features = self.parts["pca"].transform(z).astype(np.float32)
@@ -90,6 +92,9 @@ class Model:
 
     def _feature_units(self):
         """Region id (or PCA component id) of each selected feature, and its training-average value."""
+        if "bins" in self.parts:
+            bins = np.asarray(self.parts["bins"])
+            return bins // 10, np.asarray(self.parts["bin_means"], dtype=np.float32)
         selected = np.asarray(self.parts["selected"])
         if self.parts.get("pca") is not None:
             return selected, np.zeros(len(selected), dtype=np.float32)   # components of centred data
@@ -172,6 +177,13 @@ def _check_meta(meta, antibiotic):
 
 
 def _check_parts(parts):
+    if "bins" in parts:                                   # direct format: raw bins straight into the model
+        for key in ("bins", "bin_means", "estimator"):
+            if key not in parts:
+                raise ValueError(f"model.joblib is missing {key!r}")
+        if len(parts["bins"]) != len(parts["bin_means"]):
+            raise ValueError("bins and bin_means differ in length")
+        return
     for key in ("scaler", "selected", "scaled", "estimator"):
         if key not in parts:
             raise ValueError(f"model.joblib is missing {key!r}")

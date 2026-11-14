@@ -59,6 +59,7 @@
 {% if regions %}
 <section class="block" aria-labelledby="regionHeading">
     <h2 id="regionHeading">Regions the model uses</h2>
+    <p>The regions chosen by the feature selection in at least 5 of its 10 runs.</p>
     {{ region_table(regions, show_peak=False, protein_table=protein_table) }}
 </section>
 {% endif %}

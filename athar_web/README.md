@@ -31,8 +31,16 @@ Open http://127.0.0.1:8000. Stop the site with Ctrl+C.
 
 ## Install the prediction models
 
-ATHAR predicts only with models in `athar_web/models/`, one folder per antibiotic. The format is in
-[`models/README.md`](models/README.md). Restart the site after adding or replacing a model. An antibiotic
+The final models are exported by `export_athar_models.py` (repository root) into `models/athar/`. Install
+them into ATHAR with:
+
+```powershell
+python -m athar_web.tools.install_models "<spectra folder>" data/labels_ecoli_A_corrected.csv models/athar
+```
+
+This writes one folder per antibiotic into `athar_web/models/`, computes the 2015–2017 average of each
+model bin (used for the explanations) and checks that ATHAR reproduces the exported scores exactly.
+The registry format is in [`models/README.md`](models/README.md). Restart the site after adding or replacing a model. An antibiotic
 without a model is shown as "Not installed" and skipped during analysis.
 
 ## Build the protein table (once)
@@ -83,7 +91,7 @@ models or the history database.
 | `knowledge.py` | WHO AWaRe groups and outside links per antibiotic |
 | `spectrum_trace.py` | Draws spectrum traces as SVG |
 | `templates/`, `static/` | Pages, styles, scripts, fonts, Plotly |
-| `tools/` | Protein table and example spectrum builders |
+| `tools/` | Model installer, protein table and example spectrum builders |
 | `tests/` | Automated tests |
 
 Environment variables: `ATHAR_MODELS_DIR` points to another models folder, `ATHAR_DB_PATH` to another

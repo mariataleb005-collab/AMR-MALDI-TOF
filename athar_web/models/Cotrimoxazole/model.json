@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "antibiotic": "Cotrimoxazole",
+  "model_version": "emopso-Raw-6000-2026-11-14",
+  "input": "Raw-6000",
+  "selector": "emopso",
+  "classifier": "RF",
+  "regions": [
+    1,
+    4,
+    7,
+    46,
+    95,
+    96,
+    129,
+    156,
+    160,
+    257,
+    325
+  ],
+  "region_votes": {
+    "1": 5,
+    "4": 6,
+    "7": 6,
+    "46": 8,
+    "95": 6,
+    "96": 5,
+    "129": 5,
+    "156": 10,
+    "160": 7,
+    "257": 7,
+    "325": 5
+  },
+  "region_rule": "consensus: chosen by >= 5 of 10 seeds",
+  "threshold": 0.3466666666666667,
+  "threshold_rule": "Youden, out-of-fold CV predictions, 2015-2017",
+  "score_type": "probability",
+  "indeterminate_band": null,
+  "training": {
+    "years": "2015-2017",
+    "n_spectra": 3509,
+    "n_resistant": 1167
+  },
+  "metrics": {
+    "cv_AUPRC": 0.5367488852381527,
+    "cv_AUROC": 0.7126205592948307,
+    "evaluation": "5-fold CV on 2015-2017"
+  },
+  "source": {
+    "file": "Cotrimoxazole.joblib",
+    "commit": "b9ab005 (uncommitted changes)",
+    "created": "2026-11-14 12:53",
+    "versions": {
+      "python": "3.12.10",
+      "numpy": "1.26.4",
+      "sklearn": "1.5.1",
+      "xgboost": "3.2.0",
+      "lightgbm": "4.6.0"
+    }
+  }
+}
