@@ -1,0 +1,14 @@
+antibiotic,n_regions,n_bins,median_regions_per_seed,region_rule,classifier,threshold,n_train,n_train_nonS,size_mb,RF_cv_AUPRC,XGBoost_cv_AUPRC,LightGBM_cv_AUPRC,RF_cv_AUROC,XGBoost_cv_AUROC,LightGBM_cv_AUROC
+Ciprofloxacin,12,120,14.0,consensus: chosen by >= 5 of 10 seeds,RF,0.3,3536,1084,5.56,0.7083,0.708,0.7036,0.8162,0.8112,0.806
+Cefepime,10,100,14.5,consensus: chosen by >= 5 of 10 seeds,XGBoost,0.3225,3524,636,0.13,0.6528,0.6534,0.6495,0.8666,0.8547,0.8527
+Cotrimoxazole,11,110,13.5,consensus: chosen by >= 5 of 10 seeds,RF,0.3467,3509,1167,6.42,0.5367,0.5289,0.5291,0.7126,0.6944,0.696
+Levofloxacin,12,120,16.5,consensus: chosen by >= 5 of 10 seeds,XGBoost,0.4479,3497,1066,0.13,0.7176,0.7238,0.7177,0.8188,0.8185,0.8145
+Ceftazidime,9,90,12.5,consensus: chosen by >= 5 of 10 seeds,XGBoost,0.2506,3482,666,0.13,0.6226,0.6407,0.6322,0.8488,0.8483,0.8436
+Ceftriaxone,11,110,15.5,consensus: chosen by >= 5 of 10 seeds,LightGBM,0.3733,3575,830,0.24,0.7731,0.773,0.7743,0.8783,0.8719,0.8737
+Tobramycin,7,70,11.0,consensus: chosen by >= 5 of 10 seeds,RF,0.1467,3505,470,4.43,0.3618,0.3494,0.3433,0.7382,0.7186,0.7177
+Amikacin,7,70,19.0,consensus: chosen by >= 5 of 10 seeds,LightGBM,0.0663,3498,264,0.23,0.32,0.3136,0.3284,0.7965,0.7757,0.7878
+Amoxicillin-Clavulanic acid,7,70,11.5,consensus: chosen by >= 5 of 10 seeds,XGBoost,0.4387,3463,795,0.13,0.392,0.3947,0.3904,0.6462,0.6486,0.6423
+Piperacillin-Tazobactam,12,120,27.0,consensus: chosen by >= 5 of 10 seeds,LightGBM,0.0641,3461,232,0.24,0.182,0.1685,0.2051,0.6855,0.6766,0.6951
+Ampicillin-Amoxicillin,12,120,19.5,consensus: chosen by >= 5 of 10 seeds,RF,0.6,3509,2102,6.7,0.8012,0.7975,0.7987,0.7158,0.699,0.6993
+Cefpodoxime,7,70,11.0,consensus: chosen by >= 5 of 10 seeds,XGBoost,0.4372,1397,582,0.13,0.8243,0.8302,0.8241,0.8273,0.828,0.8235
+Norfloxacin,13,130,30.5,consensus: chosen by >= 5 of 10 seeds,LightGBM,0.3808,1043,295,0.24,0.6634,0.6722,0.6867,0.7905,0.7832,0.7953
