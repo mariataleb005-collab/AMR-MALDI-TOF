@@ -42,7 +42,17 @@
   "metrics": {
     "cv_AUPRC": 0.6534269091426623,
     "cv_AUROC": 0.8546868004115995,
-    "evaluation": "5-fold CV on 2015-2017"
+    "evaluation": "5-fold CV on 2015-2017",
+    "test_AUROC": 0.8528,
+    "test_AUPRC": 0.6283,
+    "test_BalAcc": 0.7737,
+    "test_MCC": 0.4925,
+    "test_F1": 0.5726,
+    "test_Sens": 0.6601,
+    "test_Spec": 0.8874,
+    "test_VME": 0.3399,
+    "test_ME": 0.1126,
+    "test_evaluation": "2018, 1366 spectra (203 resistant), scored once"
   },
   "source": {
     "file": "Cefepime.joblib",

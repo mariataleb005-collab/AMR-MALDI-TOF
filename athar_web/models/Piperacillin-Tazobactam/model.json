@@ -46,7 +46,17 @@
   "metrics": {
     "cv_AUPRC": 0.2050832937356885,
     "cv_AUROC": 0.695140621890751,
-    "evaluation": "5-fold CV on 2015-2017"
+    "evaluation": "5-fold CV on 2015-2017",
+    "test_AUROC": 0.5299,
+    "test_AUPRC": 0.103,
+    "test_BalAcc": 0.5144,
+    "test_MCC": 0.0203,
+    "test_F1": 0.1388,
+    "test_Sens": 0.2288,
+    "test_Spec": 0.8,
+    "test_VME": 0.7712,
+    "test_ME": 0.2,
+    "test_evaluation": "2018, 1338 spectra (118 resistant), scored once"
   },
   "source": {
     "file": "Piperacillin-Tazobactam.joblib",

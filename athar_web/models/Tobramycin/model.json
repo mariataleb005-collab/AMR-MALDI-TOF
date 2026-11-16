@@ -36,7 +36,17 @@
   "metrics": {
     "cv_AUPRC": 0.3617668747065523,
     "cv_AUROC": 0.7381594167338498,
-    "evaluation": "5-fold CV on 2015-2017"
+    "evaluation": "5-fold CV on 2015-2017",
+    "test_AUROC": 0.6436,
+    "test_AUPRC": 0.2243,
+    "test_BalAcc": 0.5843,
+    "test_MCC": 0.1234,
+    "test_F1": 0.2588,
+    "test_Sens": 0.4217,
+    "test_Spec": 0.7469,
+    "test_VME": 0.5783,
+    "test_ME": 0.2531,
+    "test_evaluation": "2018, 1371 spectra (166 resistant), scored once"
   },
   "source": {
     "file": "Tobramycin.joblib",

@@ -48,7 +48,17 @@
   "metrics": {
     "cv_AUPRC": 0.6867136429472421,
     "cv_AUROC": 0.795300951730937,
-    "evaluation": "5-fold CV on 2015-2017"
+    "evaluation": "5-fold CV on 2015-2017",
+    "test_AUROC": 0.686,
+    "test_AUPRC": 0.4907,
+    "test_BalAcc": 0.6301,
+    "test_MCC": 0.2545,
+    "test_F1": 0.4184,
+    "test_Sens": 0.4316,
+    "test_Spec": 0.8286,
+    "test_VME": 0.5684,
+    "test_ME": 0.1714,
+    "test_evaluation": "2018, 445 spectra (95 resistant), scored once"
   },
   "source": {
     "file": "Norfloxacin.joblib",

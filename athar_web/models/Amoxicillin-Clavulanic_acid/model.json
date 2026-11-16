@@ -36,7 +36,17 @@
   "metrics": {
     "cv_AUPRC": 0.3946722044771226,
     "cv_AUROC": 0.6486211812918018,
-    "evaluation": "5-fold CV on 2015-2017"
+    "evaluation": "5-fold CV on 2015-2017",
+    "test_AUROC": 0.5606,
+    "test_AUPRC": 0.359,
+    "test_BalAcc": 0.545,
+    "test_MCC": 0.1061,
+    "test_F1": 0.2958,
+    "test_Sens": 0.2408,
+    "test_Spec": 0.8491,
+    "test_VME": 0.7592,
+    "test_ME": 0.1509,
+    "test_evaluation": "2018, 1363 spectra (382 resistant), scored once"
   },
   "source": {
     "file": "Amoxicillin-Clavulanic_acid.joblib",

@@ -46,7 +46,17 @@
   "metrics": {
     "cv_AUPRC": 0.723789304419261,
     "cv_AUROC": 0.8185052042103955,
-    "evaluation": "5-fold CV on 2015-2017"
+    "evaluation": "5-fold CV on 2015-2017",
+    "test_AUROC": 0.7875,
+    "test_AUPRC": 0.6741,
+    "test_BalAcc": 0.702,
+    "test_MCC": 0.4047,
+    "test_F1": 0.5691,
+    "test_Sens": 0.5676,
+    "test_Spec": 0.8364,
+    "test_VME": 0.4324,
+    "test_ME": 0.1636,
+    "test_evaluation": "2018, 1361 spectra (377 resistant), scored once"
   },
   "source": {
     "file": "Levofloxacin.joblib",

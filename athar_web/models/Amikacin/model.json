@@ -36,7 +36,17 @@
   "metrics": {
     "cv_AUPRC": 0.32839170179323857,
     "cv_AUROC": 0.7877903546748499,
-    "evaluation": "5-fold CV on 2015-2017"
+    "evaluation": "5-fold CV on 2015-2017",
+    "test_AUROC": 0.684,
+    "test_AUPRC": 0.1752,
+    "test_BalAcc": 0.6685,
+    "test_MCC": 0.177,
+    "test_F1": 0.1989,
+    "test_Sens": 0.5373,
+    "test_Spec": 0.7997,
+    "test_VME": 0.4627,
+    "test_ME": 0.2003,
+    "test_evaluation": "2018, 1360 spectra (67 resistant), scored once"
   },
   "source": {
     "file": "Amikacin.joblib",

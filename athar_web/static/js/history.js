@@ -11,7 +11,7 @@ function summarize(records) {
     document.getElementById("statAnalyses").textContent = records.length;
     document.getElementById("statResistant").textContent = countCalls(results, "R");
     document.getElementById("statSusceptible").textContent = countCalls(results, "S");
-    document.getElementById("statIndeterminate").textContent = countCalls(results, "I");
+    document.getElementById("statAntibiotics").textContent = records.length ? records[0].results.length : "—";
 }
 
 function cell(row, text) {
@@ -37,8 +37,7 @@ function renderHistory() {
         cell(tr, record.sample_id || "–");
         cell(tr, record.filename);
         const r = record.results;
-        const i = countCalls(r, "I");
-        cell(tr, `${countCalls(r, "R")} R, ${countCalls(r, "S")} S${i ? `, ${i} I` : ""}`);
+        cell(tr, `${countCalls(r, "R")} R, ${countCalls(r, "S")} S`);
         const actionCell = document.createElement("td");
         const link = document.createElement("a");
         link.href = `/analysis/${record.id}`;

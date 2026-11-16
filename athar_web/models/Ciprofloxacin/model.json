@@ -46,7 +46,17 @@
   "metrics": {
     "cv_AUPRC": 0.7082785693733694,
     "cv_AUROC": 0.8162139492363176,
-    "evaluation": "5-fold CV on 2015-2017"
+    "evaluation": "5-fold CV on 2015-2017",
+    "test_AUROC": 0.7827,
+    "test_AUPRC": 0.6414,
+    "test_BalAcc": 0.6922,
+    "test_MCC": 0.3621,
+    "test_F1": 0.5554,
+    "test_Sens": 0.623,
+    "test_Spec": 0.7613,
+    "test_VME": 0.377,
+    "test_ME": 0.2387,
+    "test_evaluation": "2018, 1375 spectra (382 resistant), scored once"
   },
   "source": {
     "file": "Ciprofloxacin.joblib",

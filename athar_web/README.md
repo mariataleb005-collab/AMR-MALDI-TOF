@@ -43,6 +43,16 @@ model bin (used for the explanations) and checks that ATHAR reproduces the expor
 The registry format is in [`models/README.md`](models/README.md). Restart the site after adding or replacing a model. An antibiotic
 without a model is shown as "Not installed" and skipped during analysis.
 
+## Score the installed models on the 2018 test set (once)
+
+```powershell
+python -m athar_web.tools.evaluate_installed_models "<spectra folder>" data/labels_ecoli_A_corrected.csv
+```
+
+Scores each installed model once on the 2018 spectra (threshold fixed on 2015–2017), adds the test metrics
+to each `model.json`, and writes `results/athar_test_eval/test_metrics.csv` and `test_predictions.csv`.
+Run it again after re-installing the models.
+
 ## Build the protein table (once)
 
 ```powershell
@@ -91,7 +101,7 @@ models or the history database.
 | `knowledge.py` | WHO AWaRe groups and outside links per antibiotic |
 | `spectrum_trace.py` | Draws spectrum traces as SVG |
 | `templates/`, `static/` | Pages, styles, scripts, fonts, Plotly |
-| `tools/` | Model installer, protein table and example spectrum builders |
+| `tools/` | Model installer, test-set evaluation, protein table and example spectrum builders |
 | `tests/` | Automated tests |
 
 Environment variables: `ATHAR_MODELS_DIR` points to another models folder, `ATHAR_DB_PATH` to another

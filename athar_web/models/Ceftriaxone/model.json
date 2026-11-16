@@ -44,7 +44,17 @@
   "metrics": {
     "cv_AUPRC": 0.7743222360515507,
     "cv_AUROC": 0.8736673469835626,
-    "evaluation": "5-fold CV on 2015-2017"
+    "evaluation": "5-fold CV on 2015-2017",
+    "test_AUROC": 0.8285,
+    "test_AUPRC": 0.6757,
+    "test_BalAcc": 0.7593,
+    "test_MCC": 0.5125,
+    "test_F1": 0.6038,
+    "test_Sens": 0.6133,
+    "test_Spec": 0.9053,
+    "test_VME": 0.3867,
+    "test_ME": 0.0947,
+    "test_evaluation": "2018, 1386 spectra (256 resistant), scored once"
   },
   "source": {
     "file": "Ceftriaxone.joblib",

@@ -45,7 +45,10 @@
             <tr><th scope="row">{{ key.replace("cv_", "CV ").replace("test_", "2018 test ").replace("_", " ") }}</th><td>{{ "%.3f"|format(value) }}</td></tr>
             {% endfor %}
             {% if model.metrics.evaluation is defined %}
-            <tr><th scope="row">Evaluated on</th><td>{{ model.metrics.evaluation }}</td></tr>
+            <tr><th scope="row">CV evaluated on</th><td>{{ model.metrics.evaluation }}</td></tr>
+            {% endif %}
+            {% if model.metrics.test_evaluation is defined %}
+            <tr><th scope="row">Test set</th><td>{{ model.metrics.test_evaluation }}</td></tr>
             {% endif %}
         </tbody>
     </table>
