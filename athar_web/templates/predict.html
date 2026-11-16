@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}Analyze a spectrum{% endblock %}
+
+{% block hero %}
+<section class="intro">
+    <h1>Predict antibiotic resistance from an <i>E.&nbsp;coli</i> MALDI-TOF spectrum</h1>
+    <p class="lead">
+        Upload the spectrum that the MALDI-TOF instrument produced during species identification.
+        ATHAR returns a resistance call for each antibiotic, a day or two before phenotypic
+        susceptibility testing is complete.
+    </p>
+</section>
+
+<figure class="trace-hero">
+    <svg viewBox="0 0 1200 150" preserveAspectRatio="none" role="img"
+         aria-label="Measured E. coli MALDI-TOF spectrum from 2,000 to 20,000 daltons">
+        <path class="trace-line" d="{{ trace_path(1200, 128, 0, 6000, 600, 0.75) }}" vector-effect="non-scaling-stroke"/>
+        <line class="trace-axis" x1="0" y1="129" x2="1200" y2="129" vector-effect="non-scaling-stroke"/>
+    </svg>
+    <div class="trace-ticks" aria-hidden="true">
+        <span>2,000</span><span>5,000</span><span>8,000</span><span>11,000</span><span>14,000</span><span>17,000</span><span>20,000 Da</span>
+    </div>
+    <figcaption>
+        A measured <i>E. coli</i> spectrum from DRIAMS-A. ATHAR, <span lang="ar">أثر</span>, is Arabic for trace.
+    </figcaption>
+</figure>
+{% endblock %}
+
+{% block content %}
+
+
+
+<section class="block" aria-labelledby="analyzeHeading">
+    <h2 id="analyzeHeading">Analyze a spectrum</h2>
+
+    {% if installed_count == 0 %}
+    <p class="notice notice-warning">
+        No prediction model is installed yet. ATHAR can check a spectrum file, but it cannot
+        predict resistance until a model is added.
+    </p>
+    {% endif %}
+
+    <form id="analyzeForm" class="form-grid" novalidate>
+        <span class="form-label" id="fileLabel">Spectrum file</span>
+        <div class="field">
+            <div class="dropzone" id="uploadZone">
+                <input type="file" id="spectrumFile" accept=".csv,.txt" aria-describedby="fileHint">
+                <label for="spectrumFile" class="button-secondary">Choose file</label>
+                <span id="selectedFileName" class="dropzone-text">or drop it here</span>
+            </div>
+            <p class="hint" id="fileHint">CSV or TXT with 6,000 binned intensity values (3&nbsp;Da bins, 2,000 to 20,000&nbsp;Da). Up to 2&nbsp;MB.</p>
+        </div>
+
+        <label for="sampleId">Sample ID</label>
+        <div class="field">
+            <input type="text" id="sampleId" name="sample_id" maxlength="40" autocomplete="off" placeholder="Optional">
+            <p class="hint">Use a laboratory code, never a patient name or record number.</p>
+        </div>
+
+        <label for="species">Species</label>
+        <div class="field">
+            <select id="species" name="species">
+                <option value="Escherichia coli" selected>Escherichia coli</option>
+                <option value="Other">Another species</option>
+            </select>
+            <p class="hint">The models were trained on <i>E. coli</i> only.</p>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" id="analyzeBtn" class="button-primary" disabled>Analyze spectrum</button>
+            <button type="button" id="exampleBtn" class="button-quiet">Use an example spectrum</button>
+            <p id="uploadMessage" class="form-message" role="status" aria-live="polite"></p>
+        </div>
+    </form>
+</section>
+
+<section class="block" aria-labelledby="coverageHeading">
+    <h2 id="coverageHeading">Antibiotics</h2>
+    <p>One model per antibiotic. Antibiotics without an installed model are skipped during analysis.</p>
+    {% include "_antibiotic_table.html" %}
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', path='/js/main.js') }}"></script>
+{% endblock %}

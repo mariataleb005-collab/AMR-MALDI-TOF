@@ -1,0 +1,34 @@
+<div class="table-scroll">
+<table class="data-table">
+    <thead>
+        <tr>
+            <th scope="col">Antibiotic</th>
+            <th scope="col">Class</th>
+            <th scope="col">WHO AWaRe</th>
+            <th scope="col">Model</th>
+            <th scope="col" class="num">CV AUPRC</th>
+            <th scope="col" class="num">2018 AUPRC</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in antibiotics %}
+        <tr>
+            <th scope="row"><a href="/antibiotic/{{ slug(row.antibiotic) }}">{{ row.antibiotic }}</a></th>
+            <td>{{ row.drug_class }}</td>
+            <td>{{ row.aware }}</td>
+            <td>
+                {% if row.status == "installed" %}{{ row.model.model_version }}
+                {% elif row.status == "error" %}<span class="status-error">Could not be loaded</span>
+                {% else %}<span class="status-muted">Not installed</span>{% endif %}
+            </td>
+            <td class="num">
+                {% if row.model and row.model.metrics.cv_AUPRC is defined %}{{ "%.2f"|format(row.model.metrics.cv_AUPRC) }}{% else %}<span class="status-muted">–</span>{% endif %}
+            </td>
+            <td class="num">
+                {% if row.model and row.model.metrics.test_AUPRC is defined %}{{ "%.2f"|format(row.model.metrics.test_AUPRC) }}{% else %}<span class="status-muted">–</span>{% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>

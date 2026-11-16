@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}History{% endblock %}
+{% block content %}
+
+<section class="intro intro-with-control">
+    <div>
+        <h1>Analysis history</h1>
+        <p class="lead">
+            Every analysis run on this installation, newest first. ATHAR keeps the sample ID, file name,
+            spectrum and calls, but no patient data.
+        </p>
+    </div>
+    <a class="button-secondary" href="/api/history/export" download>Download CSV</a>
+</section>
+
+<dl class="facts">
+    <div><dt>Analyses</dt><dd id="statAnalyses">—</dd></div>
+    <div><dt>Resistant calls</dt><dd id="statResistant">—</dd></div>
+    <div><dt>Susceptible calls</dt><dd id="statSusceptible">—</dd></div>
+    <div><dt>Antibiotics per analysis</dt><dd id="statAntibiotics">—</dd></div>
+</dl>
+
+<section class="block" aria-labelledby="recordsHeading">
+    <div class="block-head">
+        <h2 id="recordsHeading">Analyses</h2>
+        <div class="control control-inline">
+            <label for="historySearch" class="sr-only">Search by sample ID, file name or analysis number</label>
+            <input id="historySearch" type="search" placeholder="Sample, file or number">
+        </div>
+    </div>
+
+    <div class="table-scroll">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th scope="col">Analysis</th>
+                    <th scope="col">Date (UTC)</th>
+                    <th scope="col">Sample</th>
+                    <th scope="col">File</th>
+                    <th scope="col">Calls</th>
+                    <th scope="col"><span class="sr-only">Details</span></th>
+                </tr>
+            </thead>
+            <tbody id="historyRows"></tbody>
+        </table>
+    </div>
+    <p id="historyEmpty" class="empty" hidden>No analyses yet. <a href="/">Analyze a spectrum</a> to create the first record.</p>
+    <p id="historyStatus" class="table-note" role="status">Loading analyses…</p>
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', path='/js/history.js') }}"></script>
+{% endblock %}

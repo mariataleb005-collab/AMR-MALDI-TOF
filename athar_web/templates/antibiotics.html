@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Antibiotics{% endblock %}
+
+{% block content %}
+<section class="intro">
+    <h1>Antibiotics</h1>
+    <p class="lead">
+        ATHAR has one model per antibiotic. Each page gives the drug class, the WHO AWaRe group,
+        links to reference databases and the regions the model uses.
+    </p>
+</section>
+
+{% include "_antibiotic_table.html" %}
+{% endblock %}

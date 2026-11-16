@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "antibiotic": "Piperacillin-Tazobactam",
+  "model_version": "emopso-Raw-6000-2026-11-14",
+  "input": "Raw-6000",
+  "selector": "emopso",
+  "classifier": "LightGBM",
+  "regions": [
+    122,
+    153,
+    214,
+    216,
+    256,
+    280,
+    295,
+    296,
+    346,
+    383,
+    453,
+    481
+  ],
+  "region_votes": {
+    "122": 5,
+    "153": 5,
+    "214": 8,
+    "216": 7,
+    "256": 6,
+    "280": 6,
+    "295": 7,
+    "296": 8,
+    "346": 7,
+    "383": 5,
+    "453": 5,
+    "481": 5
+  },
+  "region_rule": "consensus: chosen by >= 5 of 10 seeds",
+  "threshold": 0.06410890621732646,
+  "threshold_rule": "Youden, out-of-fold CV predictions, 2015-2017",
+  "score_type": "probability",
+  "indeterminate_band": null,
+  "training": {
+    "years": "2015-2017",
+    "n_spectra": 3461,
+    "n_resistant": 232
+  },
+  "metrics": {
+    "cv_AUPRC": 0.2050832937356885,
+    "cv_AUROC": 0.695140621890751,
+    "evaluation": "5-fold CV on 2015-2017",
+    "test_AUROC": 0.5299,
+    "test_AUPRC": 0.103,
+    "test_BalAcc": 0.5144,
+    "test_MCC": 0.0203,
+    "test_F1": 0.1388,
+    "test_Sens": 0.2288,
+    "test_Spec": 0.8,
+    "test_VME": 0.7712,
+    "test_ME": 0.2,
+    "test_evaluation": "2018, 1338 spectra (118 resistant), scored once"
+  },
+  "source": {
+    "file": "Piperacillin-Tazobactam.joblib",
+    "commit": "b9ab005 (uncommitted changes)",
+    "created": "2026-11-14 12:56",
+    "versions": {
+      "python": "3.12.10",
+      "numpy": "1.26.4",
+      "sklearn": "1.5.1",
+      "xgboost": "3.2.0",
+      "lightgbm": "4.6.0"
+    }
+  }
+}

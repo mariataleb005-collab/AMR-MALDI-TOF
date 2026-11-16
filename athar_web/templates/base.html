@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ATHAR{% endblock %} | ATHAR</title>
+    <link rel="preload" href="{{ url_for('static', path='/fonts/ibm-plex-sans-latin-400-normal.woff2') }}" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/style.css') }}">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+    <div class="header-inner">
+        <a href="/" class="wordmark" aria-label="ATHAR home">
+            <svg class="wordmark-trace" viewBox="0 0 64 22" aria-hidden="true" focusable="false">
+                <path d="{{ trace_path(64, 22, 300, 2700, 64, 0.6) }}"/>
+            </svg>
+            <span class="wordmark-latin">ATHAR</span>
+            <span class="wordmark-arabic" lang="ar">أثر</span>
+        </a>
+
+        <nav class="site-nav" aria-label="Main">
+            <a href="/" {% if page_title == 'Analyze' %}aria-current="page"{% endif %}>Analyze</a>
+            <a href="/antibiotics" {% if page_title == 'Antibiotics' %}aria-current="page"{% endif %}>Antibiotics</a>
+            <a href="/history" {% if page_title == 'History' %}aria-current="page"{% endif %}>History</a>
+            <a href="/about" {% if page_title == 'About' %}aria-current="page"{% endif %}>About</a>
+        </nav>
+    </div>
+</header>
+
+{% if self.hero() | trim %}
+<div class="hero-band">
+    <div class="hero-inner">
+        {% block hero %}{% endblock %}
+    </div>
+</div>
+{% endif %}
+
+<main id="main" class="page">
+    {% block content %}{% endblock %}
+</main>
+
+<footer class="site-footer">
+    <div class="footer-inner">
+        <p>ATHAR is a senior project in Biomedical Informatics at the University of Sharjah, 2026.</p>
+        <p>Research use only. ATHAR does not replace antimicrobial susceptibility testing.</p>
+    </div>
+</footer>
+
+{% block scripts %}{% endblock %}
+</body>
+</html>

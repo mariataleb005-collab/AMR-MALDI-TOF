@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "antibiotic": "Levofloxacin",
+  "model_version": "emopso-Raw-6000-2026-11-14",
+  "input": "Raw-6000",
+  "selector": "emopso",
+  "classifier": "XGBoost",
+  "regions": [
+    0,
+    5,
+    74,
+    107,
+    129,
+    160,
+    162,
+    163,
+    167,
+    216,
+    283,
+    326
+  ],
+  "region_votes": {
+    "0": 5,
+    "5": 8,
+    "74": 8,
+    "107": 6,
+    "129": 7,
+    "160": 10,
+    "162": 10,
+    "163": 9,
+    "167": 5,
+    "216": 5,
+    "283": 5,
+    "326": 10
+  },
+  "region_rule": "consensus: chosen by >= 5 of 10 seeds",
+  "threshold": 0.44794341921806335,
+  "threshold_rule": "Youden, out-of-fold CV predictions, 2015-2017",
+  "score_type": "probability",
+  "indeterminate_band": null,
+  "training": {
+    "years": "2015-2017",
+    "n_spectra": 3497,
+    "n_resistant": 1066
+  },
+  "metrics": {
+    "cv_AUPRC": 0.723789304419261,
+    "cv_AUROC": 0.8185052042103955,
+    "evaluation": "5-fold CV on 2015-2017",
+    "test_AUROC": 0.7875,
+    "test_AUPRC": 0.6741,
+    "test_BalAcc": 0.702,
+    "test_MCC": 0.4047,
+    "test_F1": 0.5691,
+    "test_Sens": 0.5676,
+    "test_Spec": 0.8364,
+    "test_VME": 0.4324,
+    "test_ME": 0.1636,
+    "test_evaluation": "2018, 1361 spectra (377 resistant), scored once"
+  },
+  "source": {
+    "file": "Levofloxacin.joblib",
+    "commit": "b9ab005 (uncommitted changes)",
+    "created": "2026-11-14 12:54",
+    "versions": {
+      "python": "3.12.10",
+      "numpy": "1.26.4",
+      "sklearn": "1.5.1",
+      "xgboost": "3.2.0",
+      "lightgbm": "4.6.0"
+    }
+  }
+}

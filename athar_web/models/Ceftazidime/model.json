@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "antibiotic": "Ceftazidime",
+  "model_version": "emopso-Raw-6000-2026-11-14",
+  "input": "Raw-6000",
+  "selector": "emopso",
+  "classifier": "XGBoost",
+  "regions": [
+    0,
+    1,
+    4,
+    5,
+    27,
+    162,
+    214,
+    216,
+    326
+  ],
+  "region_votes": {
+    "0": 9,
+    "1": 8,
+    "4": 7,
+    "5": 7,
+    "27": 7,
+    "162": 8,
+    "214": 6,
+    "216": 7,
+    "326": 9
+  },
+  "region_rule": "consensus: chosen by >= 5 of 10 seeds",
+  "threshold": 0.25060367584228516,
+  "threshold_rule": "Youden, out-of-fold CV predictions, 2015-2017",
+  "score_type": "probability",
+  "indeterminate_band": null,
+  "training": {
+    "years": "2015-2017",
+    "n_spectra": 3482,
+    "n_resistant": 666
+  },
+  "metrics": {
+    "cv_AUPRC": 0.6407353282780649,
+    "cv_AUROC": 0.8483371185658234,
+    "evaluation": "5-fold CV on 2015-2017",
+    "test_AUROC": 0.8053,
+    "test_AUPRC": 0.548,
+    "test_BalAcc": 0.7407,
+    "test_MCC": 0.4109,
+    "test_F1": 0.5087,
+    "test_Sens": 0.639,
+    "test_Spec": 0.8423,
+    "test_VME": 0.361,
+    "test_ME": 0.1577,
+    "test_evaluation": "2018, 1340 spectra (205 resistant), scored once"
+  },
+  "source": {
+    "file": "Ceftazidime.joblib",
+    "commit": "b9ab005 (uncommitted changes)",
+    "created": "2026-11-14 12:54",
+    "versions": {
+      "python": "3.12.10",
+      "numpy": "1.26.4",
+      "sklearn": "1.5.1",
+      "xgboost": "3.2.0",
+      "lightgbm": "4.6.0"
+    }
+  }
+}

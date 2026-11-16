@@ -1,0 +1,59 @@
+{# Table of a model's m/z regions with candidate proteins. show_peak adds this spectrum's peak. #}
+{% macro region_table(regions, show_peak=False, protein_table=True, effect_text=none, score_type="decision") %}
+<div class="table-scroll">
+<table class="data-table region-table">
+    <thead>
+        <tr>
+            <th scope="col">m/z window (Da)</th>
+            {% if effect_text %}<th scope="col" class="num">Effect</th>{% endif %}
+            {% if regions and regions[0].votes is defined %}<th scope="col" class="num">Chosen in</th>{% endif %}
+            {% if show_peak %}<th scope="col" class="num">Highest bin in this spectrum</th>{% endif %}
+            <th scope="col">Candidate <i>E. coli</i> proteins</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for r in regions %}
+        <tr>
+            <th scope="row">{{ "{:,}".format(r.mz_from) }}–{{ "{:,}".format(r.mz_to) }}</th>
+            {% if effect_text %}
+            <td class="num effect {{ 'effect-r' if r.effect > 0 else ('effect-s' if r.effect < 0 else '') }}">{{ effect_text(r.effect, score_type) }}</td>
+            {% endif %}
+            {% if r.votes is defined %}<td class="num">{{ r.votes }} of 10 runs</td>{% endif %}
+            {% if show_peak %}
+            <td class="num">{{ "{:,.1f}".format(r.peak_mz) }} <span class="status-muted">({{ "%.5f"|format(r.peak_intensity) }})</span></td>
+            {% endif %}
+            <td>
+                {% if r.candidates %}
+                <ul class="protein-list">
+                    {% for c in r.candidates[:4] %}
+                    <li>
+                        <span class="protein-name">{{ c.protein }}</span>
+                        {% if c.gene %}<i class="gene">{{ c.gene }}</i>{% endif %}
+                        <span class="status-muted">{{ "{:,}".format(c.mass|int) }} Da{% if "Met" in c.ion %}, without Met{% endif %}</span>
+                        <span class="entry-links">
+                            <a href="{{ c.links.uniprot }}" target="_blank" rel="noopener">UniProt {{ c.accession }}</a>
+                            <a href="{{ c.links.alphafold }}" target="_blank" rel="noopener">AlphaFold</a>
+                            <a href="{{ c.links.blast }}" target="_blank" rel="noopener">BLAST</a>
+                        </span>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% if r.candidates|length > 4 %}
+                <a href="{{ r.search_url }}" target="_blank" rel="noopener">{{ r.candidates|length - 4 }} more in UniProt</a>
+                {% endif %}
+                {% elif protein_table %}
+                <span class="status-muted">No reviewed <i>E. coli</i> K-12 protein in this mass window.</span>
+                {% else %}
+                <a href="{{ r.search_url }}" target="_blank" rel="noopener">Search UniProt for this mass window</a>
+                {% endif %}
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+<p class="table-note">
+    Candidates are reviewed UniProtKB entries for <i>E. coli</i> K-12 whose mass fits the window as a
+    singly protonated ion, with or without the first methionine. A match is a lead, not an identification.
+</p>
+{% endmacro %}

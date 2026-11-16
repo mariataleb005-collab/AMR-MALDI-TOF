@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "antibiotic": "Amoxicillin-Clavulanic acid",
+  "model_version": "emopso-Raw-6000-2026-11-14",
+  "input": "Raw-6000",
+  "selector": "emopso",
+  "classifier": "XGBoost",
+  "regions": [
+    5,
+    78,
+    153,
+    163,
+    167,
+    214,
+    437
+  ],
+  "region_votes": {
+    "5": 7,
+    "78": 9,
+    "153": 6,
+    "163": 10,
+    "167": 8,
+    "214": 8,
+    "437": 7
+  },
+  "region_rule": "consensus: chosen by >= 5 of 10 seeds",
+  "threshold": 0.4386986494064331,
+  "threshold_rule": "Youden, out-of-fold CV predictions, 2015-2017",
+  "score_type": "probability",
+  "indeterminate_band": null,
+  "training": {
+    "years": "2015-2017",
+    "n_spectra": 3463,
+    "n_resistant": 795
+  },
+  "metrics": {
+    "cv_AUPRC": 0.3946722044771226,
+    "cv_AUROC": 0.6486211812918018,
+    "evaluation": "5-fold CV on 2015-2017",
+    "test_AUROC": 0.5606,
+    "test_AUPRC": 0.359,
+    "test_BalAcc": 0.545,
+    "test_MCC": 0.1061,
+    "test_F1": 0.2958,
+    "test_Sens": 0.2408,
+    "test_Spec": 0.8491,
+    "test_VME": 0.7592,
+    "test_ME": 0.1509,
+    "test_evaluation": "2018, 1363 spectra (382 resistant), scored once"
+  },
+  "source": {
+    "file": "Amoxicillin-Clavulanic_acid.joblib",
+    "commit": "b9ab005 (uncommitted changes)",
+    "created": "2026-11-14 12:55",
+    "versions": {
+      "python": "3.12.10",
+      "numpy": "1.26.4",
+      "sklearn": "1.5.1",
+      "xgboost": "3.2.0",
+      "lightgbm": "4.6.0"
+    }
+  }
+}

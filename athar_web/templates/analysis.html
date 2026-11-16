@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% from "_regions.html" import region_table %}
+
+{% block title %}Analysis {{ record.id }}{% endblock %}
+
+{% block content %}
+
+<section class="intro intro-with-control">
+    <div>
+        <h1>Analysis {{ record.id }}{% if record.sample_id %}, sample {{ record.sample_id }}{% endif %}</h1>
+        <p class="meta">
+            {{ record.filename }}, <i>{{ record.species }}</i>, analysed {{ record.created_at.replace("T", " ").replace("+00:00", "") }} UTC.
+        </p>
+    </div>
+    <div class="action-row">
+        <a class="button-primary" href="/analysis/{{ record.id }}/report" target="_blank" rel="noopener">Open printable report</a>
+        <a class="button-secondary" href="/">New analysis</a>
+    </div>
+</section>
+
+<p class="notice notice-warning">
+    Research use only. Confirm every result with phenotypic antimicrobial susceptibility testing.
+</p>
+
+<section class="block block-first" aria-labelledby="resultsHeading">
+    <h2 id="resultsHeading">Resistance calls</h2>
+    <div class="table-scroll">
+    <table class="data-table results-table">
+        <thead>
+            <tr>
+                <th scope="col">Antibiotic</th>
+                <th scope="col">Call</th>
+                <th scope="col" class="num">Score</th>
+                <th scope="col" class="num">Threshold</th>
+                <th scope="col">WHO AWaRe</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for s in sections %}
+            {% set r = s.result %}
+            <tr>
+                <th scope="row"><a href="/antibiotic/{{ s.slug }}">{{ r.antibiotic }}</a></th>
+                <td><span class="call call-{{ r.call|lower }}">{{ {"R": "Resistant", "S": "Susceptible", "I": "Indeterminate"}[r.call] }}</span></td>
+                {% if r.score_type == "probability" %}
+                <td class="num">{{ "%.1f"|format(r.score * 100) }}%</td>
+                <td class="num">{{ "%.1f"|format(r.threshold * 100) }}%</td>
+                {% else %}
+                <td class="num">{{ "%.3f"|format(r.score) }}</td>
+                <td class="num">{{ "%.3f"|format(r.threshold) }}</td>
+                {% endif %}
+                <td>{{ s.aware }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+    <p class="table-note">
+        A score at or above the threshold is called resistant. Thresholds were set on the 2015–2017 training spectra.
+        {% if sections|selectattr("result.call", "equalto", "I")|list %}
+        Indeterminate means the score is too close to the threshold to call.
+        {% endif %}
+    </p>
+</section>
+
+{% set explained = sections|selectattr("has_effects")|list %}
+{% set shown = sections|selectattr("regions")|list %}
+<section class="block" aria-labelledby="spectrumHeading">
+    <div class="block-head">
+        <h2 id="spectrumHeading">What drove each call</h2>
+        {% if shown or explained %}
+        <div class="control control-inline">
+            <label for="regionAntibiotic">Antibiotic</label>
+            <select id="regionAntibiotic">
+                {% for s in sections if s.regions or s.components %}
+                <option value="{{ s.slug }}" data-name="{{ s.result.antibiotic }}">{{ s.result.antibiotic }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        {% endif %}
+    </div>
+    <p>
+        For each region the model uses, ATHAR replaces that part of the spectrum with its average over the
+        training spectra and scores the sample again. The change in score is the region's effect on this call.
+    </p>
+
+    {% if record.spectrum %}
+    <div class="chart-frame"><div id="spectrumChart" aria-label="Uploaded spectrum with the selected model's regions shaded"></div></div>
+    <p class="chart-caption">
+        Shaded bands are the regions of the selected model. Drag across the plot to zoom; double-click to reset.
+    </p>
+    {% else %}
+    <p class="status-muted">This analysis has no stored spectrum.</p>
+    {% endif %}
+
+    {% for s in sections if s.regions or s.components %}
+    <div class="region-panel" data-regions="{{ s.slug }}" {% if not loop.first %}hidden{% endif %}>
+        <h3>{{ s.result.antibiotic }}</h3>
+        {% if s.summary %}<p class="explain-summary">{{ s.summary }}</p>{% endif %}
+        {% if s.has_effects %}
+        <div class="chart-frame chart-small"><div class="effect-chart" data-effects="{{ s.result.antibiotic }}"
+             aria-label="Effect of the top regions on the {{ s.result.antibiotic }} score"></div></div>
+        <p class="chart-caption">
+            Bars to the right pushed the score towards resistant; bars to the left, towards susceptible.
+            {% if s.result.score_type == "probability" %}Effects are in percentage points of probability.{% else %}Effects are in units of the model's decision score.{% endif %}
+        </p>
+        {% endif %}
+        {% if s.regions %}
+        {{ region_table(s.regions, show_peak=True, protein_table=protein_table, effect_text=effect_text if s.has_effects else none, score_type=s.result.score_type) }}
+        {% else %}
+        <table class="data-table results-table">
+            <thead><tr><th scope="col">PCA component</th><th scope="col" class="num">Effect</th></tr></thead>
+            <tbody>
+            {% for c in s.components %}
+                <tr><th scope="row">{{ c.unit }}</th><td class="num">{{ effect_text(c.effect, s.result.score_type) }}</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <p class="table-note">This model uses PCA components, which combine many m/z bins, so they have no single m/z position.</p>
+        {% endif %}
+    </div>
+    {% endfor %}
+
+    {% for s in sections if not s.regions and not s.components %}
+    <p class="table-note">{{ s.result.antibiotic }}: the model has changed since this analysis, so its regions are not shown.</p>
+    {% endfor %}
+</section>
+
+<script id="chartData" type="application/json">{{ chart|tojson }}</script>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', path='/js/plotly-2.35.2.min.js') }}"></script>
+<script src="{{ url_for('static', path='/js/analysis.js') }}"></script>
+{% endblock %}

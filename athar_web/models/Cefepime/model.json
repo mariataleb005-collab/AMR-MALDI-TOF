@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "antibiotic": "Cefepime",
+  "model_version": "emopso-Raw-6000-2026-11-14",
+  "input": "Raw-6000",
+  "selector": "emopso",
+  "classifier": "XGBoost",
+  "regions": [
+    0,
+    1,
+    5,
+    27,
+    129,
+    162,
+    163,
+    214,
+    215,
+    216
+  ],
+  "region_votes": {
+    "0": 7,
+    "1": 8,
+    "5": 10,
+    "27": 9,
+    "129": 6,
+    "162": 7,
+    "163": 6,
+    "214": 7,
+    "215": 6,
+    "216": 10
+  },
+  "region_rule": "consensus: chosen by >= 5 of 10 seeds",
+  "threshold": 0.3224875032901764,
+  "threshold_rule": "Youden, out-of-fold CV predictions, 2015-2017",
+  "score_type": "probability",
+  "indeterminate_band": null,
+  "training": {
+    "years": "2015-2017",
+    "n_spectra": 3524,
+    "n_resistant": 636
+  },
+  "metrics": {
+    "cv_AUPRC": 0.6534269091426623,
+    "cv_AUROC": 0.8546868004115995,
+    "evaluation": "5-fold CV on 2015-2017",
+    "test_AUROC": 0.8528,
+    "test_AUPRC": 0.6283,
+    "test_BalAcc": 0.7737,
+    "test_MCC": 0.4925,
+    "test_F1": 0.5726,
+    "test_Sens": 0.6601,
+    "test_Spec": 0.8874,
+    "test_VME": 0.3399,
+    "test_ME": 0.1126,
+    "test_evaluation": "2018, 1366 spectra (203 resistant), scored once"
+  },
+  "source": {
+    "file": "Cefepime.joblib",
+    "commit": "b9ab005 (uncommitted changes)",
+    "created": "2026-11-14 12:53",
+    "versions": {
+      "python": "3.12.10",
+      "numpy": "1.26.4",
+      "sklearn": "1.5.1",
+      "xgboost": "3.2.0",
+      "lightgbm": "4.6.0"
+    }
+  }
+}

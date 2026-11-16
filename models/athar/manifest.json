@@ -1,0 +1,152 @@
+{
+  "input": "Raw-6000",
+  "algorithm": "emopso",
+  "min_votes": 5,
+  "created": "2026-11-14 12:57",
+  "commit": "b9ab005 (uncommitted changes)",
+  "antibiotics": {
+    "Ciprofloxacin": {
+      "file": "Ciprofloxacin.joblib",
+      "classifier": "RF",
+      "n_regions": 12,
+      "n_bins": 120,
+      "threshold": 0.3,
+      "cv_AUPRC": 0.7082785693733694,
+      "cv_AUROC": 0.8162139492363176,
+      "region_rule": "consensus: chosen by >= 5 of 10 seeds",
+      "size_mb": 5.56
+    },
+    "Cefepime": {
+      "file": "Cefepime.joblib",
+      "classifier": "XGBoost",
+      "n_regions": 10,
+      "n_bins": 100,
+      "threshold": 0.3224875032901764,
+      "cv_AUPRC": 0.6534269091426623,
+      "cv_AUROC": 0.8546868004115995,
+      "region_rule": "consensus: chosen by >= 5 of 10 seeds",
+      "size_mb": 0.13
+    },
+    "Cotrimoxazole": {
+      "file": "Cotrimoxazole.joblib",
+      "classifier": "RF",
+      "n_regions": 11,
+      "n_bins": 110,
+      "threshold": 0.3466666666666667,
+      "cv_AUPRC": 0.5367488852381527,
+      "cv_AUROC": 0.7126205592948307,
+      "region_rule": "consensus: chosen by >= 5 of 10 seeds",
+      "size_mb": 6.42
+    },
+    "Levofloxacin": {
+      "file": "Levofloxacin.joblib",
+      "classifier": "XGBoost",
+      "n_regions": 12,
+      "n_bins": 120,
+      "threshold": 0.44794341921806335,
+      "cv_AUPRC": 0.723789304419261,
+      "cv_AUROC": 0.8185052042103955,
+      "region_rule": "consensus: chosen by >= 5 of 10 seeds",
+      "size_mb": 0.13
+    },
+    "Ceftazidime": {
+      "file": "Ceftazidime.joblib",
+      "classifier": "XGBoost",
+      "n_regions": 9,
+      "n_bins": 90,
+      "threshold": 0.25060367584228516,
+      "cv_AUPRC": 0.6407353282780649,
+      "cv_AUROC": 0.8483371185658234,
+      "region_rule": "consensus: chosen by >= 5 of 10 seeds",
+      "size_mb": 0.13
+    },
+    "Ceftriaxone": {
+      "file": "Ceftriaxone.joblib",
+      "classifier": "LightGBM",
+      "n_regions": 11,
+      "n_bins": 110,
+      "threshold": 0.37327338233240454,
+      "cv_AUPRC": 0.7743222360515507,
+      "cv_AUROC": 0.8736673469835626,
+      "region_rule": "consensus: chosen by >= 5 of 10 seeds",
+      "size_mb": 0.24
+    },
+    "Tobramycin": {
+      "file": "Tobramycin.joblib",
+      "classifier": "RF",
+      "n_regions": 7,
+      "n_bins": 70,
+      "threshold": 0.14666666666666667,
+      "cv_AUPRC": 0.3617668747065523,
+      "cv_AUROC": 0.7381594167338498,
+      "region_rule": "consensus: chosen by >= 5 of 10 seeds",
+      "size_mb": 4.43
+    },
+    "Amikacin": {
+      "file": "Amikacin.joblib",
+      "classifier": "LightGBM",
+      "n_regions": 7,
+      "n_bins": 70,
+      "threshold": 0.06634497223098756,
+      "cv_AUPRC": 0.32839170179323857,
+      "cv_AUROC": 0.7877903546748499,
+      "region_rule": "consensus: chosen by >= 5 of 10 seeds",
+      "size_mb": 0.23
+    },
+    "Amoxicillin-Clavulanic acid": {
+      "file": "Amoxicillin-Clavulanic_acid.joblib",
+      "classifier": "XGBoost",
+      "n_regions": 7,
+      "n_bins": 70,
+      "threshold": 0.4386986494064331,
+      "cv_AUPRC": 0.3946722044771226,
+      "cv_AUROC": 0.6486211812918018,
+      "region_rule": "consensus: chosen by >= 5 of 10 seeds",
+      "size_mb": 0.13
+    },
+    "Piperacillin-Tazobactam": {
+      "file": "Piperacillin-Tazobactam.joblib",
+      "classifier": "LightGBM",
+      "n_regions": 12,
+      "n_bins": 120,
+      "threshold": 0.06410890621732646,
+      "cv_AUPRC": 0.2050832937356885,
+      "cv_AUROC": 0.695140621890751,
+      "region_rule": "consensus: chosen by >= 5 of 10 seeds",
+      "size_mb": 0.24
+    },
+    "Ampicillin-Amoxicillin": {
+      "file": "Ampicillin-Amoxicillin.joblib",
+      "classifier": "RF",
+      "n_regions": 12,
+      "n_bins": 120,
+      "threshold": 0.6,
+      "cv_AUPRC": 0.8012327035033462,
+      "cv_AUROC": 0.7157662335957253,
+      "region_rule": "consensus: chosen by >= 5 of 10 seeds",
+      "size_mb": 6.7
+    },
+    "Cefpodoxime": {
+      "file": "Cefpodoxime.joblib",
+      "classifier": "XGBoost",
+      "n_regions": 7,
+      "n_bins": 70,
+      "threshold": 0.4371919333934784,
+      "cv_AUPRC": 0.8302098768878796,
+      "cv_AUROC": 0.8280370629535003,
+      "region_rule": "consensus: chosen by >= 5 of 10 seeds",
+      "size_mb": 0.13
+    },
+    "Norfloxacin": {
+      "file": "Norfloxacin.joblib",
+      "classifier": "LightGBM",
+      "n_regions": 13,
+      "n_bins": 130,
+      "threshold": 0.38083044737999483,
+      "cv_AUPRC": 0.6867136429472421,
+      "cv_AUROC": 0.795300951730937,
+      "region_rule": "consensus: chosen by >= 5 of 10 seeds",
+      "size_mb": 0.24
+    }
+  }
+}

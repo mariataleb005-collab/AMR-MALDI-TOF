@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "antibiotic": "Ciprofloxacin",
+  "model_version": "emopso-Raw-6000-2026-11-14",
+  "input": "Raw-6000",
+  "selector": "emopso",
+  "classifier": "RF",
+  "regions": [
+    5,
+    74,
+    129,
+    159,
+    160,
+    162,
+    163,
+    167,
+    216,
+    282,
+    325,
+    326
+  ],
+  "region_votes": {
+    "5": 6,
+    "74": 5,
+    "129": 8,
+    "159": 5,
+    "160": 10,
+    "162": 10,
+    "163": 9,
+    "167": 6,
+    "216": 5,
+    "282": 5,
+    "325": 7,
+    "326": 10
+  },
+  "region_rule": "consensus: chosen by >= 5 of 10 seeds",
+  "threshold": 0.3,
+  "threshold_rule": "Youden, out-of-fold CV predictions, 2015-2017",
+  "score_type": "probability",
+  "indeterminate_band": null,
+  "training": {
+    "years": "2015-2017",
+    "n_spectra": 3536,
+    "n_resistant": 1084
+  },
+  "metrics": {
+    "cv_AUPRC": 0.7082785693733694,
+    "cv_AUROC": 0.8162139492363176,
+    "evaluation": "5-fold CV on 2015-2017",
+    "test_AUROC": 0.7827,
+    "test_AUPRC": 0.6414,
+    "test_BalAcc": 0.6922,
+    "test_MCC": 0.3621,
+    "test_F1": 0.5554,
+    "test_Sens": 0.623,
+    "test_Spec": 0.7613,
+    "test_VME": 0.377,
+    "test_ME": 0.2387,
+    "test_evaluation": "2018, 1375 spectra (382 resistant), scored once"
+  },
+  "source": {
+    "file": "Ciprofloxacin.joblib",
+    "commit": "b9ab005 (uncommitted changes)",
+    "created": "2026-11-14 12:52",
+    "versions": {
+      "python": "3.12.10",
+      "numpy": "1.26.4",
+      "sklearn": "1.5.1",
+      "xgboost": "3.2.0",
+      "lightgbm": "4.6.0"
+    }
+  }
+}
