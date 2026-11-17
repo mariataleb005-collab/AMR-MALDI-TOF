@@ -61,6 +61,21 @@ def mz_range(region):
     return 2000 + 30 * region, 2000 + 30 * (region + 1)
 
 
+RELIABILITY_CUTS = ((0.80, "high"), (0.70, "moderate"))
+
+
+def reliability(meta):
+    """Reliability label from the model's CV AUROC on the training years (2015-2017; 2018 is not used):
+    high >= 0.80, moderate 0.70-0.80, low < 0.70. None when the model has no CV AUROC."""
+    auroc = (meta.get("metrics") or {}).get("cv_AUROC")
+    if auroc is None:
+        return None
+    for cut, label in RELIABILITY_CUTS:
+        if auroc >= cut:
+            return label
+    return "low"
+
+
 @dataclass
 class Model:
     antibiotic: str
@@ -154,6 +169,7 @@ class Model:
             "n_regions": len(m["regions"]),
             "metrics": m["metrics"],
             "training": m.get("training", {}),
+            "reliability": reliability(m),
         }
 
 

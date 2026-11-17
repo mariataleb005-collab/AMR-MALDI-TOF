@@ -10,7 +10,7 @@ from fastapi.templating import Jinja2Templates
 from . import knowledge, proteins
 from .history_db import get_analyses, get_analysis, initialize, save_analysis
 from .predict import MAX_BYTES, parse_spectrum
-from .registry import ANTIBIOTICS, Registry
+from .registry import ANTIBIOTICS, Registry, reliability
 from .spectrum_trace import path_from, trace_path
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -123,6 +123,7 @@ def analysis_context(record):
             "components": components,
             "summary": explanation_summary(result, rows, components),
             "has_effects": bool(explanation),
+            "reliability": reliability(model.meta) if same_model else None,
         })
     return {"record": record, "sections": sections, "protein_table": proteins.table_available(),
             "effect_text": effect_text}

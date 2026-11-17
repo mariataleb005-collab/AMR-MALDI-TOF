@@ -6,6 +6,8 @@
             <th scope="col">Class</th>
             <th scope="col">WHO AWaRe</th>
             <th scope="col">Model</th>
+            <th scope="col">Reliability</th>
+            <th scope="col" class="num">CV AUROC</th>
             <th scope="col" class="num">CV AUPRC</th>
             <th scope="col" class="num">2018 AUPRC</th>
         </tr>
@@ -21,6 +23,8 @@
                 {% elif row.status == "error" %}<span class="status-error">Could not be loaded</span>
                 {% else %}<span class="status-muted">Not installed</span>{% endif %}
             </td>
+            <td>{% if row.model and row.model.reliability %}<span class="rel rel-{{ row.model.reliability }}">{{ row.model.reliability|capitalize }}</span>{% else %}<span class="status-muted">–</span>{% endif %}</td>
+            <td class="num">{% if row.model and row.model.metrics.cv_AUROC is defined %}{{ "%.3f"|format(row.model.metrics.cv_AUROC) }}{% else %}<span class="status-muted">–</span>{% endif %}</td>
             <td class="num">
                 {% if row.model and row.model.metrics.cv_AUPRC is defined %}{{ "%.2f"|format(row.model.metrics.cv_AUPRC) }}{% else %}<span class="status-muted">–</span>{% endif %}
             </td>

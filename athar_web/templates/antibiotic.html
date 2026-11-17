@@ -37,6 +37,7 @@
         <tbody>
             <tr><th scope="row">Version</th><td>{{ model.model_version }}</td></tr>
             <tr><th scope="row">Classifier</th><td>{{ model.classifier }} on {{ model.input }}</td></tr>
+            {% if model.reliability %}<tr><th scope="row">Reliability</th><td><span class="rel rel-{{ model.reliability }}">{{ model.reliability|capitalize }}</span> (from the CV AUROC on 2015–2017: high ≥ 0.80, moderate 0.70–0.80, low &lt; 0.70)</td></tr>{% endif %}
             <tr><th scope="row">{{ "Components" if model_input == "PCA-200" else "m/z regions" }}</th><td>{{ model.n_regions }}</td></tr>
             {% if model.training.n_spectra is defined %}
             <tr><th scope="row">Training spectra</th><td>{{ "{:,}".format(model.training.n_spectra) }}, of which {{ "{:,}".format(model.training.n_resistant) }} resistant ({{ model.training.years }})</td></tr>
