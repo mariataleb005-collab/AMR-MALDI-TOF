@@ -30,6 +30,7 @@
             <tr>
                 <th scope="col">Antibiotic</th>
                 <th scope="col">Call</th>
+                <th scope="col">Reliability</th>
                 <th scope="col" class="num">Score</th>
                 <th scope="col" class="num">Threshold</th>
                 <th scope="col">WHO AWaRe</th>
@@ -41,6 +42,7 @@
             <tr>
                 <th scope="row"><a href="/antibiotic/{{ s.slug }}">{{ r.antibiotic }}</a></th>
                 <td><span class="call call-{{ r.call|lower }}">{{ {"R": "Resistant", "S": "Susceptible", "I": "Indeterminate"}[r.call] }}</span></td>
+                <td>{% if s.reliability %}<span class="rel rel-{{ s.reliability }}">{{ s.reliability|capitalize }}</span>{% else %}<span class="status-muted">–</span>{% endif %}</td>
                 {% if r.score_type == "probability" %}
                 <td class="num">{{ "%.1f"|format(r.score * 100) }}%</td>
                 <td class="num">{{ "%.1f"|format(r.threshold * 100) }}%</td>
@@ -56,6 +58,7 @@
     </div>
     <p class="table-note">
         A score at or above the threshold is called resistant. Thresholds were set on the 2015–2017 training spectra.
+        Reliability comes from each model's cross-validated AUROC on the same years: high ≥ 0.80, moderate 0.70–0.80, low &lt; 0.70. Treat calls of low reliability with caution and wait for the laboratory AST.
         {% if sections|selectattr("result.call", "equalto", "I")|list %}
         Indeterminate means the score is too close to the threshold to call.
         {% endif %}

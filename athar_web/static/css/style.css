@@ -307,6 +307,17 @@ input:hover, select:hover { border-color: var(--ink-3); }
 .call-r { color: var(--res); background: var(--res-wash); }
 .call-s { color: var(--sus); background: var(--sus-wash); }
 .call-i { color: var(--warn); background: var(--warn-wash); }
+.rel {
+    display: inline-block;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    padding: 1px 7px;
+    border: 1px solid currentColor;
+    border-radius: 3px;
+}
+.rel-high { color: var(--sus); }
+.rel-moderate { color: var(--warn); }
+.rel-low { color: var(--res); }
 .status-muted { color: var(--ink-3); }
 .status-error { color: var(--res); }
 
